@@ -33,4 +33,18 @@ describe('asn1.js RFC2560', function() {
     assert.equal(basic.tbsResponseData.version, 'v1');
     assert.equal(basic.tbsResponseData.producedAt, 1385797510000);
   });
+
+  it('should encode/decode OCSP response', function() {
+    var encoded = rfc2560.OCSPResponse.encode({
+      responseStatus: 'malformed_request',
+      responseBytes: {
+        responseType: 'id-pkix-ocsp-basic',
+        response: 'random-string'
+      }
+    }, 'der');
+    var decoded = rfc2560.OCSPResponse.decode(encoded, 'der');
+    assert.equal(decoded.responseStatus, 'malformed_request');
+    assert.equal(decoded.responseBytes.responseType, 'id-pkix-ocsp-basic');
+    assert.equal(decoded.responseBytes.response.toString(), 'random-string');
+  });
 });

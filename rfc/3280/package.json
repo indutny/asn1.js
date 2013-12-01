@@ -1,17 +1,15 @@
 {
-  "name": "asn1.js",
+  "name": "asn1.js-rfc3280",
   "version": "0.0.0",
-  "description": "ASN.1 encoder and decoder",
-  "main": "lib/asn1.js",
-  "scripts": {
-    "test": "mocha --reporter spec test/*-test.js rfc/2560/test/*-test.js"
-  },
+  "description": "RFC3280 structures for asn1.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:indutny/asn1.js"
   },
   "keywords": [
-    "asn.1",
+    "asn1",
+    "rfc3280",
     "der"
   ],
   "author": "Fedor Indutny",
@@ -20,7 +18,7 @@
     "url": "https://github.com/indutny/asn1.js/issues"
   },
   "homepage": "https://github.com/indutny/asn1.js",
-  "devDependencies": {
-    "mocha": "~1.14.0"
+  "peerDependencies": {
+    "asn1.js": "~0.1.0"
   }
 }

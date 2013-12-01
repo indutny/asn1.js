@@ -1,7 +1,11 @@
-var asn1 = require('../asn1');
-var rfc3280 = require('./rfc3280');
+try {
+  var asn1 = require('asn1.js');
+  var rfc3280 = require('asn1.js-rfc3280');
+} catch (e) {
+  var asn1 = require('../..');
+  var rfc3280 = require('../3280');
+}
 
-// Import
 var OCSPResponse = asn1.define('OCSPResponse', function() {
   this.seq().obj(
     this.key('responseStatus').use(ResponseStatus),

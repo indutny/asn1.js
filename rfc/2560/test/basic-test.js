@@ -1,5 +1,5 @@
 var assert = require('assert');
-var asn1 = require('..');
+var rfc2560 = require('..');
 
 var Buffer = require('buffer').Buffer;
 
@@ -22,11 +22,11 @@ describe('asn1.js RFC2560', function() {
       '2721ff38c709f3ec580d22ff40818dd17f',
       'hex');
 
-    var res = asn1.modules.rfc2560.OCSPResponse.decode(data, 'der');
+    var res = rfc2560.OCSPResponse.decode(data, 'der');
     assert.equal(res.responseStatus, 'successful');
     assert.equal(res.responseBytes.responseType, 'id-pkix-ocsp-basic');
 
-    var basic = asn1.modules.rfc2560.BasicOCSPResponse.decode(
+    var basic = rfc2560.BasicOCSPResponse.decode(
       res.responseBytes.response,
       'der'
     );

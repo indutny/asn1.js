@@ -1,4 +1,8 @@
-var asn1 = require('../asn1');
+try {
+  var asn1 = require('asn1.js');
+} catch (e) {
+  var asn1 = require('../..');
+}
 
 var CRLReason = asn1.define('CRLReason', function() {
   this.enum({

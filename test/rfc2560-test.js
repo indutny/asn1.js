@@ -3,7 +3,7 @@ var asn1 = require('..');
 
 var Buffer = require('buffer').Buffer;
 
-describe('asn1.js', function() {
+describe('asn1.js RFC2560', function() {
   it('should decode OCSP response', function() {
     var data = new Buffer(
       '308201d40a0100a08201cd308201c906092b0601050507300101048201ba308201b630' +
@@ -30,6 +30,7 @@ describe('asn1.js', function() {
       res.responseBytes.response,
       'der'
     );
-    console.log(require('util').inspect(basic, false, 300));
+    assert.equal(basic.tbsResponseData.version, 'v1');
+    assert.equal(basic.tbsResponseData.producedAt, 1385797510000);
   });
 });

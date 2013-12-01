@@ -33,7 +33,7 @@ Encode data:
 var output = Human.encode({
   firstName: 'Thomas',
   lastName: 'Anderson',
-  age: 30, // Perhaps?!
+  age: 28,
   gender: 'male',
   bio: [
     {

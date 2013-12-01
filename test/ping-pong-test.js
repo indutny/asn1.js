@@ -27,6 +27,10 @@ describe('asn1.js ping/pong', function() {
       this.octstr();
     }, new Buffer('hello'));
 
+    test('bitstr', function() {
+      this.bitstr();
+    }, { unused: 4, data: new Buffer('hello!') });
+
     test('gentime', function() {
       this.gentime();
     }, 1385921175000);

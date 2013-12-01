@@ -52,7 +52,7 @@ console.log(human);
 /*
 { firstName: <Buffer 54 68 6f 6d 61 73>,
   lastName: <Buffer 41 6e 64 65 72 73 6f 6e>,
-  age: 30,
+  age: 28,
   gender: 'male',
   bio:
    [ { time: 922820400000,

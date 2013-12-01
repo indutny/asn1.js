@@ -31,6 +31,10 @@ describe('asn1.js ping/pong', function() {
       this.gentime();
     }, 1385921175000);
 
+    test('utctime', function() {
+      this.utctime();
+    }, 1385921175000);
+
     test('null', function() {
       this.null_();
     }, null);

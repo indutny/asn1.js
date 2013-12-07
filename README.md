@@ -60,6 +60,20 @@ console.log(human);
 */
 ```
 
+### Partial decode
+
+Its possible to parse data without stopping on first error. In order to do it,
+you should call:
+
+```javascript
+var human = Human.decode(output, 'der', { partial: true });
+console.log(human);
+/*
+{ result: { ... },
+  errors: [ ... ] }
+*/
+```
+
 #### LICENSE
 
 This software is licensed under the MIT License.

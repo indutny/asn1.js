@@ -1,6 +1,6 @@
 {
   "name": "asn1.js-rfc2560",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "RFC2560 structures for asn1.js",
   "main": "index.js",
   "repository": {
@@ -22,6 +22,6 @@
     "asn1.js-rfc3280": "~0.1.0"
   },
   "peerDependencies": {
-    "asn1.js": "~0.1.0"
+    "asn1.js": "~0.2.0"
   }
 }

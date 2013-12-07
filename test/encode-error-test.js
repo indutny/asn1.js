@@ -43,7 +43,7 @@ describe('asn1.js encode error', function() {
       this.seq().obj(
         this.key('key').int()
       );
-    }, { key: 'hello' } , /object path: "key"/i);
+    }, { key: 'hello' } , /object path: \["key"\]/i);
 
     test('deep and empty', function() {
       this.seq().obj(
@@ -53,7 +53,7 @@ describe('asn1.js encode error', function() {
           )
         )
       );
-    }, { } , /object path: "a.b"/i);
+    }, { } , /object path: \["a"\]\["b"\]/i);
 
     test('deep', function() {
       this.seq().obj(
@@ -63,7 +63,7 @@ describe('asn1.js encode error', function() {
           )
         )
       );
-    }, { a: { b: { c: 'hello' } } } , /object path: "a.b.c"/i);
+    }, { a: { b: { c: 'hello' } } } , /object path: \["a"\]\["b"\]\["c"\]/i);
 
     test('use', function() {
       var S = asn1.define('S', function() {
@@ -77,6 +77,6 @@ describe('asn1.js encode error', function() {
           this.key('b').use(S)
         )
       );
-    }, { a: { b: { x: 'hello' } } } , /object path: "a.b.x"/i);
+    }, { a: { b: { x: 'hello' } } } , /object path: \["a"\]\["b"\]\["x"\]/i);
   });
 });

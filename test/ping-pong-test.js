@@ -59,7 +59,8 @@ describe('asn1.js ping/pong', function() {
 
     test('any', function() {
       this.any();
-    }, new Buffer('ok any'));
+    }, new Buffer('02210081347a0d3d674aeeb563061d94a3aea5f6a7' +
+                  'c6dc153ea90a42c1ca41929ac1b9', 'hex'));
 
     test('default explicit', function() {
       this.def('v1').explicit(0).int({

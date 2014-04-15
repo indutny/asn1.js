@@ -22,6 +22,6 @@
     "asn1.js-rfc3280": "~0.1.0"
   },
   "peerDependencies": {
-    "asn1.js": "~0.2.0"
+    "asn1.js": "~0.3.0"
   }
 }

@@ -22,5 +22,8 @@
   "homepage": "https://github.com/indutny/asn1.js",
   "devDependencies": {
     "mocha": "~1.14.0"
+  },
+  "optionalDependencies": {
+    "bignum": "~0.6.2"
   }
 }

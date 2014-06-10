@@ -121,7 +121,7 @@ describe('asn1.js ping/pong', function() {
       );
     }, { hello: 'devs' }, { hello: 'devs', how: 'are you' });
 
-    test('setof', function() {
+    test('seqof', function() {
       var S = asn1.define('S', function() {
         this.seq().obj(
           this.key('a').def('b').int({ 0: 'a', 1: 'b' }),

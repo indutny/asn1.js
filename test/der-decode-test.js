@@ -30,6 +30,16 @@ describe('asn1.js DER decoder', function() {
     });
     var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true });
+  });
 
+  it('should decode optional tag to default value', function() {
+    var A = asn1.define('A', function() {
+      this.seq().obj(
+        this.key('key').bool(),
+        this.optional().key('opt').octstr().def('default')
+      );
+    });
+    var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    assert.deepEqual(out, { 'key': true, 'opt': 'default' });
   });
 });

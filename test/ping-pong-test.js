@@ -121,6 +121,12 @@ describe('asn1.js ping/pong', function() {
       );
     }, { hello: 'devs' }, { hello: 'devs', how: 'are you' });
 
+    test('optionals #3', function() {
+      this.seq().obj(
+        this.key('content').optional().int()
+      );
+    }, {}, {});
+
     test('seqof', function() {
       var S = asn1.define('S', function() {
         this.seq().obj(

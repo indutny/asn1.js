@@ -19,5 +19,17 @@ describe('asn1.js DER decoder', function() {
 
     var out = A.decode(new Buffer('300720050403313233', 'hex'), 'der');
     assert.equal(out.a.b.toString(), '123');
-  })
+  });
+
+  it('should decode optional tag to undefined key', function() {
+    var A = asn1.define('A', function() {
+      this.seq().obj(
+        this.key('key').bool(),
+        this.optional().key('opt').bool()
+      );
+    });
+    var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    assert.deepEqual(out, { 'key': true });
+
+  });
 });

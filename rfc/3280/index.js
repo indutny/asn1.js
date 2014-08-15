@@ -48,11 +48,11 @@ var TBSCertificate = asn1.define('TBSCertificate', function() {
     this.key('subjectPublicKeyInfo').use(SubjectPublicKeyInfo),
 
     // TODO(indutny): validate that version is v2 or v3
-    this.key('issuerUniqueID').optional().implicit(1).use(UniqueIdentifier),
-    this.key('subjectUniqueID').optional().implicit(2).use(UniqueIdentifier),
+    this.key('issuerUniqueID').optional().explicit(1).use(UniqueIdentifier),
+    this.key('subjectUniqueID').optional().explicit(2).use(UniqueIdentifier),
 
     // TODO(indutny): validate that version is v3
-    this.key('extensions').optional().implicit(3).use(Extensions)
+    this.key('extensions').optional().explicit(3).use(Extensions)
   );
 });
 exports.TBSCertificate = TBSCertificate;

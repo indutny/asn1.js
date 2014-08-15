@@ -19,15 +19,9 @@ describe('asn1.js ping/pong', function() {
       this.int();
     }, 0);
 
-    if (asn1.bignum !== null) {
-      test('bigint', function() {
-        this.int();
-      }, new asn1.bignum('0102030405060708', 16));
-    } else {
-      test('bigint', function() {
-        this.int();
-      }, new Buffer('0102030405060708', 'hex'));
-    }
+    test('bigint', function() {
+      this.int();
+    }, new asn1.bignum('0102030405060708', 16));
 
     test('enum', function() {
       this.enum({ 0: 'hello', 1: 'world' });

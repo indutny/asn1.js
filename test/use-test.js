@@ -67,6 +67,30 @@ describe('asn1.js models', function() {
 
     });
 
+    it('should get model with function call', function() {
+      var SubModel = asn1.define('SubModel', function() {
+        this.seq().obj(
+          this.key('x').octstr()
+        )
+      });
+      var Model = asn1.define('Model', function() {
+        this.seq().obj(
+          this.key('a').int(),
+          this.key('sub').use(function(obj) {
+              assert.equal(obj.a, 1);
+              return SubModel;
+          })
+        );
+      });
+
+      var data = {a: 1, sub: {x: new Buffer("123")}};
+      var wire = Model.encode(data, 'der');
+      assert.equal(wire.toString('hex'), '300a02010130050403313233');
+      var back = Model.decode(wire, 'der');
+      assert.deepEqual(back, data);
+
+    });
+
   });
 });
 

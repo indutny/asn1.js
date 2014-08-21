@@ -130,5 +130,11 @@ describe('asn1.js ping/pong', function() {
       });
       this.seqof(S);
     }, [{}, { a: 'a', c: 'c' }], [{ a: 'b', c: 'd' }, { a: 'a', c: 'c' }]);
+
+    test('choice', function() {
+      this.choice({
+        apple: this.bool()
+      });
+    }, { type: 'apple', value: true });
   });
 });

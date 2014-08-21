@@ -19,4 +19,20 @@ describe('asn1.js DER encoder', function() {
     assert.equal(encoded.toString('hex'), 'a203040158');
     assert.equal(encoded.length, 5);
   })
+
+  function test(name, model_definition, model_value, der_expected) {
+    it(name, function() {
+      var Model, der_actual;
+      Model = asn1.define('Model', model_definition);
+      der_actual = Model.encode(model_value, 'der');
+      assert.deepEqual(der_actual, new Buffer(der_expected,'hex'));
+    });
+  }
+
+  test('should encode choice', function() {
+    this.choice({
+      apple: this.bool(),
+    });
+  }, { type: 'apple', value: true }, '0101ff');
+
 });

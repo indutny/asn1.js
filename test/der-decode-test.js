@@ -42,4 +42,19 @@ describe('asn1.js DER decoder', function() {
     var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true, 'opt': 'default' });
   });
+
+  function test(name, model, inputHex, expected) {
+    it(name, function() {
+      var M = asn1.define('Model', model);
+      var decoded = M.decode(new Buffer(inputHex,'hex'), 'der');
+      assert.deepEqual(decoded, expected);
+    });
+  }
+
+  test('should decode choice', function() {
+    this.choice({
+      apple: this.bool(),
+    });
+  }, '0101ff', { 'type': 'apple', 'value': true });
+
 });

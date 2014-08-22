@@ -108,9 +108,9 @@ exports.Extensions = Extensions;
 
 var Extension = asn1.define('Extension', function() {
   this.seq().obj(
-    this.key('extnID').objid(),
+    this.key('extnID').optional().objid(),
     this.key('critical').bool().def(false),
-    this.key('extnValue').octstr()
+    this.key('extnValue').optional().octstr()
   );
 });
 exports.Extension = Extension;

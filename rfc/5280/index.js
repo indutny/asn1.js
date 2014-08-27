@@ -748,6 +748,77 @@ rfc5280.UnknownExtension = asn1.define('UnknownExtension', function() {
 });
 
 /**
+ * CRL Extensions
+ */
+
+/**
+ * 1
+ * # CRL Number
+ */
+
+var CRLNumber =
+rfc5280.CRLNumber = asn1.define('CRLNumber', function() {
+  this.int();
+});
+
+/**
+ * 2
+ * # Delta CRL Indicator
+ */
+
+var DeltaCRLIndicator =
+rfc5280.DeltaCRLIndicator = asn1.define('DeltaCRLIndicator', function() {
+  this.use(CRLNumber);
+});
+
+/**
+ * 3
+ * # Issuing Distribution Point
+ */
+
+var IssuingDistributionPoint =
+rfc5280.IssuingDistributionPoint = asn1.define('IssuingDistributionPoint', function() {
+  this.seq().obj(
+    this.key('distributionPoint').use(DistributionPointName),
+    this.key('onlyContainsUserCerts').def(false).bool(),
+    this.key('onlyContainsCACerts').def(false).bool(),
+    this.key('onlySomeReasons').use(ReasonFlags),
+    this.key('indirectCRL').def(false).bool(),
+    this.key('onlyContainsAttributeCerts').def(false).bool()
+  );
+});
+
+/**
+ * 4
+ * # Reason Code
+ */
+
+var ReasonCode =
+rfc5280.ReasonCode = asn1.define('ReasonCode', function() {
+  this.enum();
+});
+
+/**
+ * 5
+ * # Invalidity Date
+ */
+
+var InvalidityDate =
+rfc5280.InvalidityDate = asn1.define('InvalidityDate', function() {
+  this.gentime();
+});
+
+/**
+ * 6
+ * # Certificate Issuer
+ */
+
+var CertificateIssuer =
+rfc5280.CertificateIssuer = asn1.define('CertificateIssuer', function() {
+  this.use(GeneralNames);
+});
+
+/**
  * Create Extension Decoders
  */
 

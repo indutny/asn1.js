@@ -670,10 +670,13 @@ rfc5280.UnknownExtension = asn1.define('UnknownExtension', function() {
   this.any();
 });
 
+/**
+ * Extensions
+ */
 
 rfc5280.extensions = {
   standard: {
-    // id-ce extensions - Standard Extensions
+    // Standard Extensions (id-ce)
     prefix: [2, 5, 29],
     35: 'Authority Key Identifier',
     14: 'Subject Key Identifier',
@@ -722,7 +725,7 @@ rfc5280.extensions = {
     46: 'Freshest CRL'
   },
 
-  // id-pe extensions - Private Internet Extensions
+  // Private Internet Extensions (id-pe)
   priv: {
     // Unknown extension: 1.3.6.1.5.5.7.1.1
     prefix: [1, 3, 6, 1, 5, 5, 7],
@@ -730,6 +733,17 @@ rfc5280.extensions = {
     11: 'Subject Information Access',
     // Unknown Extension (not documented anywhere, probably non-standard)
      '1.1': 'Unknown Extension'
+  },
+
+  // CRL Extensions (id-ce)
+  crl: {
+    prefix: [2, 5, 29],
+    20: 'CRL Number',
+    27: 'Delta CRL Indicator',
+    28: 'Issuing Distribution Point',
+    21: 'Reason Code',
+    24: 'Invalidity Date',
+    29: 'Certificate Issuer'
   }
 };
 

@@ -23,10 +23,6 @@ var rfc5280 = exports;
 
 var AuthorityKeyIdentifier =
 rfc5280.AuthorityKeyIdentifier = asn1.define('AuthorityKeyIdentifier', function() {
-  // Last tags before error:
-  // decodedTag: {"cls":"context","primitive":true,"tag":0,"tagStr":"end"}
-  // expectedTag: "octstr"
-
   this.seq().obj(
     // XXX Workaround parser error:
     this.key('_unknown').any(),
@@ -91,66 +87,6 @@ rfc5280.GeneralName = asn1.define('GeneralName', function() {
 
 var AnotherName =
 rfc5280.AnotherName = asn1.define('AnotherName', function() {
-  // Last tags before throw:
-  // XXX The root of the problem may lie here:
-  // Used by Subject Alternative Name
-  // Fails on the .objid()
-
-  // input._reporterState.path is empty array, which is why we get '(shallow)'
-  // { _reporterState: { obj: {}, path: [], options: { partial: false }, errors: [] },
-  //   base: <Buffer 30 1a 82 0c 2a 2e 62 69 74 70 61 79 2e 63 6f 6d 82 0a 62 69 74 70 61 79 2e 63 6f 6d>,
-  //   offset: 2,
-  //   length: 28 }
-
-  // ../../lib/asn1/decoders/der.js
-  // ../../lib/asn1/base/node.js L459
-
-  // node._decode(input) call error.
-  // Failed to match tag: "seq" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "ia5str" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "ia5str" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "seq" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "seqof" at: (shallow)
-  // node._decode(input) call error.
-  // Choice not matched at: (shallow)
-
-  // node._decode(input) call error.
-  // Failed to match tag: "seq" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "ia5str" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "octstr" at: (shallow)
-  // node._decode(input) call error.
-  // Failed to match tag: "objid" at: (shallow)
-
-  // ../../lib/asn1/decoders/der.js L66
-  // It's decoding it as an int (decodedTag):
-  // It's describing GeneralNames:
-  // Last tags before error:
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "seq"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "ia5str"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "ia5str"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "seq"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "seqof"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "seq"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "ia5str"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "octstr"
-  // decodedTag: {"cls":"context","primitive":true,"tag":2,"tagStr":"int"}
-  // expectedTag: "objid"
-
-  // Specification:
   this.seq().obj(
     this.key('typeId').objid(),
     this.key('value').explicit(0).any()
@@ -639,12 +575,6 @@ rfc5280.DistributionPoint = asn1.define('DistributionPoint', function() {
 
 var DistributionPointName =
 rfc5280.DistributionPointName = asn1.define('DistributionPointName', function() {
-  // Last tags before throw:
-  // decodedTag: {"cls":"context","primitive":false,"tag":0,"tagStr":"end"}
-  // expectedTag: "seqof"
-  // decodedTag: {"cls":"context","primitive":false,"tag":0,"tagStr":"end"}
-  // expectedTag: "setof"
-
   this.choice({
     // XXX Workaround parser error:
     _unknown: this.any(),
@@ -747,7 +677,6 @@ rfc5280.extensions = {
     prefix: [2, 5, 29],
     35: 'Authority Key Identifier',
     14: 'Subject Key Identifier',
-    // VERY IMPORTANT, especially is cA (basic constraints) is true (it is)
     15: {
       name: 'Key Usage',
       parse: function(decoded, cert, ext, edata) {
@@ -783,28 +712,7 @@ rfc5280.extensions = {
     31: {
       name: 'CRL Distribution Points',
       parse: function(decoded, cert, ext, edata) {
-        if (process.env.NODE_DEBUG) {
-          print('CRL Distribution Points:');
-          print(decoded);
-          print(cert);
-          print(ext);
-          print(edata);
-        }
         return decoded;
-        // For bitstr: ReasonFlags
-        // XXX Find the bitstr: ReasonFlags
-        // var data = decoded.CRLDistributionPoints.DistributionPoint.reasons;
-        // return {
-        //   unused: !!((data >> 0) & 1),
-        //   keyCompromise: !!((data >> 1) & 1),
-        //   cACompromise: !!((data >> 2) & 1),
-        //   affiliationChanged: !!((data >> 3) & 1),
-        //   superseded: !!((data >> 4) & 1),
-        //   cessationOfOperation: !!((data >> 5) & 1),
-        //   certificateHold: !!((data >> 6) & 1),
-        //   privilegeWithdrawn: !!((data >> 7) & 1),
-        //   aACompromise: !!((data >> 8) & 1)
-        // };
       },
       execute: function(cert) {
         return cert;
@@ -874,8 +782,15 @@ Object.keys(rfc5280.extensions).forEach(function(typeName) {
  * Parse all TBSCertificate's extensions
  */
 
-rfc5280.decodeExtensions = function(cert, options) {
+rfc5280.decodeExtensions = function(cert, format, options) {
   var tbsCertificate = cert.tbsCertificate;
+
+  if (format && typeof format === 'object') {
+    options = format;
+    format = null;
+  }
+
+  format = format || 'der';
 
   if (!tbsCertificate) {
     tbsCertificate = cert;
@@ -893,7 +808,7 @@ rfc5280.decodeExtensions = function(cert, options) {
 
     if (ext = rfc5280.extensions[eid]) {
       // Parse Extension
-      decoded = ext.schema.decode(edata.extnValue, 'der', options);
+      decoded = ext.schema.decode(edata.extnValue, format, options);
 
       // partial: true throws everything onto: { result: ..., errors: ... }
       if (options.partial && decoded.result) {
@@ -936,24 +851,9 @@ rfc5280.decodeExtensions = function(cert, options) {
 
       // Add our decoded extension to the output
       output[ext.prop] = data;
-
-      // XXX Debug
-      if (process.env.NODE_DEBUG) {
-        print('------------');
-        print('%s (%s):', ext.name, ext.id);
-        print('Buffer:');
-        print(edata.extnValue);
-        print('Extension:');
-        print(data);
-      }
     } else {
       // Add unknown extension:
       output.unknown.push(edata);
-
-      // XXX Debug
-      if (process.env.NODE_DEBUG) {
-        print('Unknown extension: %s', eid);
-      }
     }
   }
 
@@ -963,21 +863,3 @@ rfc5280.decodeExtensions = function(cert, options) {
 
   return output;
 };
-
-/**
- * Debug
- */
-
-var util = require('util');
-
-function inspect(obj) {
-  return typeof obj !== 'string'
-    ? util.inspect(obj, false, 20, true)
-    : obj;
-}
-
-function print(obj) {
-  return typeof obj === 'object'
-    ? process.stdout.write(inspect(obj) + '\n')
-    : console.log.apply(console, arguments);
-}

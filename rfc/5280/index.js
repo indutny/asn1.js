@@ -13,6 +13,83 @@ try {
 var rfc5280 = exports;
 
 /**
+ * Extensions
+ */
+
+rfc5280.extensions = {
+  standard: {
+    // Standard Extensions (id-ce)
+    prefix: [2, 5, 29],
+    35: 'Authority Key Identifier',
+    14: 'Subject Key Identifier',
+    15: {
+      name: 'Key Usage',
+      parse: function(decoded, cert, ext, edata) {
+        // For bitstr: KeyUsage
+        // NOTE: nonRepudiation was renamed to contentCommitment:
+        var data = decoded.data[0];
+        return {
+          digitalSignature: !!((data >> 0) & 1),
+          nonRepudiation: !!((data >> 1) & 1),
+          contentCommitment: !!((data >> 1) & 1),
+          keyEncipherment: !!((data >> 2) & 1),
+          dataEncipherment: !!((data >> 3) & 1),
+          keyAgreement: !!((data >> 4) & 1),
+          keyCertSign: !!((data >> 5) & 1),
+          cRLSign: !!((data >> 6) & 1),
+          encipherOnly: !!((data >> 7) & 1),
+          decipherOnly: !!((data >> 8) & 1)
+        };
+      },
+      execute: function(cert) {
+        return cert;
+      }
+    },
+    32: 'Certificate Policies',
+    33: 'Policy Mappings',
+    17: 'Subject Alternative Name',
+    18: 'Issuer Alternative Name',
+     9: 'Subject Directory Attributes',
+    19: 'Basic Constraints',
+    30: 'Name Constraints',
+    36: 'Policy Constraints',
+    37: 'Extended Key Usage',
+    31: {
+      name: 'CRL Distribution Points',
+      parse: function(decoded, cert, ext, edata) {
+        return decoded;
+      },
+      execute: function(cert) {
+        return cert;
+      }
+    },
+    54: 'Inhibit anyPolicy',
+    46: 'Freshest CRL'
+  },
+
+  // Private Internet Extensions (id-pe)
+  priv: {
+    // Unknown extension: 1.3.6.1.5.5.7.1.1
+    prefix: [1, 3, 6, 1, 5, 5, 7],
+          1: 'Authority Information Access',
+         11: 'Subject Information Access',
+      // Unknown Extension (not documented anywhere, probably non-standard)
+      '1.1': 'Unknown Extension'
+  },
+
+  // CRL Extensions (id-ce)
+  crl: {
+    prefix: [2, 5, 29],
+    20: 'CRL Number',
+    27: 'Delta CRL Indicator',
+    28: 'Issuing Distribution Point',
+    21: 'Reason Code',
+    24: 'Invalidity Date',
+    29: 'Certificate Issuer'
+  }
+};
+
+/**
  * Standard Extensions
  */
 
@@ -671,81 +748,8 @@ rfc5280.UnknownExtension = asn1.define('UnknownExtension', function() {
 });
 
 /**
- * Extensions
+ * Create Extension Decoders
  */
-
-rfc5280.extensions = {
-  standard: {
-    // Standard Extensions (id-ce)
-    prefix: [2, 5, 29],
-    35: 'Authority Key Identifier',
-    14: 'Subject Key Identifier',
-    15: {
-      name: 'Key Usage',
-      parse: function(decoded, cert, ext, edata) {
-        // For bitstr: KeyUsage
-        // NOTE: nonRepudiation was renamed to contentCommitment:
-        var data = decoded.data[0];
-        return {
-          digitalSignature: !!((data >> 0) & 1),
-          nonRepudiation: !!((data >> 1) & 1),
-          contentCommitment: !!((data >> 1) & 1),
-          keyEncipherment: !!((data >> 2) & 1),
-          dataEncipherment: !!((data >> 3) & 1),
-          keyAgreement: !!((data >> 4) & 1),
-          keyCertSign: !!((data >> 5) & 1),
-          cRLSign: !!((data >> 6) & 1),
-          encipherOnly: !!((data >> 7) & 1),
-          decipherOnly: !!((data >> 8) & 1)
-        };
-      },
-      execute: function(cert) {
-        return cert;
-      }
-    },
-    32: 'Certificate Policies',
-    33: 'Policy Mappings',
-    17: 'Subject Alternative Name',
-    18: 'Issuer Alternative Name',
-     9: 'Subject Directory Attributes',
-    19: 'Basic Constraints',
-    30: 'Name Constraints',
-    36: 'Policy Constraints',
-    37: 'Extended Key Usage',
-    31: {
-      name: 'CRL Distribution Points',
-      parse: function(decoded, cert, ext, edata) {
-        return decoded;
-      },
-      execute: function(cert) {
-        return cert;
-      }
-    },
-    54: 'Inhibit anyPolicy',
-    46: 'Freshest CRL'
-  },
-
-  // Private Internet Extensions (id-pe)
-  priv: {
-    // Unknown extension: 1.3.6.1.5.5.7.1.1
-    prefix: [1, 3, 6, 1, 5, 5, 7],
-     1: 'Authority Information Access',
-    11: 'Subject Information Access',
-    // Unknown Extension (not documented anywhere, probably non-standard)
-     '1.1': 'Unknown Extension'
-  },
-
-  // CRL Extensions (id-ce)
-  crl: {
-    prefix: [2, 5, 29],
-    20: 'CRL Number',
-    27: 'Delta CRL Indicator',
-    28: 'Issuing Distribution Point',
-    21: 'Reason Code',
-    24: 'Invalidity Date',
-    29: 'Certificate Issuer'
-  }
-};
 
 Object.keys(rfc5280.extensions).forEach(function(typeName) {
   var type = rfc5280.extensions[typeName];

@@ -35,6 +35,10 @@ describe('asn1.js ping/pong', function() {
       this.bitstr();
     }, { unused: 4, data: new Buffer('hello!') });
 
+    test('ia5str', function() {
+      this.ia5str();
+    }, 'hello');
+
     test('gentime', function() {
       this.gentime();
     }, 1385921175000);

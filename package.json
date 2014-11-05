@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/indutny/asn1.js",
   "devDependencies": {
-    "mocha": "~1.14.0"
+    "mocha": "^1.14.0"
   },
   "optionalDependencies": {
-    "bn.js": "~0.13.3"
+    "bn.js": "^0.15.0"
   }
 }

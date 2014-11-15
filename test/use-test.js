@@ -91,6 +91,36 @@ describe('asn1.js models', function() {
 
     });
 
+    it('should support recursive submodels', function() {
+      var PlainSubModel = asn1.define('PlainSubModel', function() {
+        this.int();
+      });
+      var RecursiveModel = asn1.define('RecursiveModel', function() {
+        this.seq().obj(
+          this.key('plain').bool(),
+          this.key('content').use(function(obj) {
+            if(obj.plain) {
+              return PlainSubModel;
+            } else {
+              return RecursiveModel;
+            }
+          })
+        );
+      });
+
+      var data = {
+        'plain': false,
+        'content': {
+          'plain': true,
+          'content': 1
+        }
+      };
+      var wire = RecursiveModel.encode(data, 'der');
+      assert.equal(wire.toString('hex'), '300b01010030060101ff020101');
+      var back = RecursiveModel.decode(wire, 'der');
+      assert.deepEqual(back, data);
+    });
+
   });
 });
 

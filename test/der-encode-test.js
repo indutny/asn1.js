@@ -62,4 +62,10 @@ describe('asn1.js DER encoder', function() {
     this.int();
   }, 0x8011, '0203008011');
 
+  test('should omit default value in DER', function() {
+    this.seq().obj(
+      this.key('required').def(false).bool(),
+      this.key('value').int()
+    );
+  }, {required: false, value: 1}, '3003020101');
 });

@@ -71,11 +71,13 @@ describe('asn1.js ping/pong', function() {
                   'c6dc153ea90a42c1ca41929ac1b9', 'hex'));
 
     test('default explicit', function() {
-      this.def('v1').explicit(0).int({
-        0: 'v1',
-        1: 'v2'
-      });
-    }, undefined, 'v1');
+      this.seq().obj(
+        this.key('version').def('v1').explicit(0).int({
+          0: 'v1',
+          1: 'v2'
+        })
+      );
+    }, {}, {'version': 'v1'});
 
     test('implicit', function() {
       this.implicit(0).int({

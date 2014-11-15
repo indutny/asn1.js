@@ -1,5 +1,6 @@
 var assert = require('assert');
 var asn1 = require('..');
+var BN = require('bn.js');
 
 var Buffer = require('buffer').Buffer;
 
@@ -48,5 +49,17 @@ describe('asn1.js DER encoder', function() {
     });
     this.explicit(0).seqof(Int);
   }, [ 1 ], 'A0053003020101' );
+
+  test('should encode BN(128) properly', function() {
+    this.int();
+  }, new BN(128), '02020080');
+
+  test('should encode int 128 properly', function() {
+    this.int();
+  }, 128, '02020080');
+
+  test('should encode 0x8011 properly', function() {
+    this.int();
+  }, 0x8011, '0203008011');
 
 });

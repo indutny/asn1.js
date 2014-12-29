@@ -1,6 +1,6 @@
 {
   "name": "asn1.js-rfc3280",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "RFC3280 structures for asn1.js",
   "main": "index.js",
   "repository": {

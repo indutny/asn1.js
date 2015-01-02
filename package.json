@@ -24,6 +24,6 @@
     "mocha": "^1.14.0"
   },
   "optionalDependencies": {
-    "bn.js": "^0.15.0"
+    "bn.js": "^0.16.0"
   }
 }

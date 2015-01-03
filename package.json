@@ -1,6 +1,6 @@
 {
   "name": "asn1.js",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "ASN.1 encoder and decoder",
   "main": "lib/asn1.js",
   "scripts": {

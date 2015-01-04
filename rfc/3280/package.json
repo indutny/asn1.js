@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/indutny/asn1.js",
   "peerDependencies": {
-    "asn1.js": "^0.6.0"
+    "asn1.js": "^0.7.0"
   }
 }

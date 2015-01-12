@@ -27,6 +27,7 @@
     "bn.js": "^1.0.0"
   },
   "dependencies": {
-    "inherits": "^2.0.1"
+    "inherits": "^2.0.1",
+    "minimalistic-assert": "^1.0.0"
   }
 }

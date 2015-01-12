@@ -25,5 +25,8 @@
   },
   "optionalDependencies": {
     "bn.js": "^1.0.0"
+  },
+  "dependencies": {
+    "inherits": "^2.0.1"
   }
 }

@@ -47,6 +47,10 @@ describe('asn1.js ping/pong', function() {
       this.utctime();
     }, 1385921175000);
 
+    test('utctime regression', function() {
+      this.utctime();
+    }, 1414454400000);
+
     test('null', function() {
       this.null_();
     }, null);

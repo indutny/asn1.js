@@ -24,7 +24,7 @@
     "mocha": "^1.14.0"
   },
   "optionalDependencies": {
-    "bn.js": "^1.0.0"
+    "bn.js": "^2.0.0"
   },
   "dependencies": {
     "inherits": "^2.0.1",

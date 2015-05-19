@@ -1,5 +1,7 @@
 var assert = require('assert');
 var asn1 = require('..');
+var fixtures = require('./fixtures');
+var jsonEqual = fixtures.jsonEqual;
 
 var Buffer = require('buffer').Buffer;
 
@@ -10,15 +12,11 @@ describe('asn1.js ping/pong', function() {
 
       var encoded = M.encode(input, 'der');
       var decoded = M.decode(encoded, 'der');
-      assert.deepEqual(decoded, expected !== undefined ? expected : input);
+      jsonEqual(decoded, expected !== undefined ? expected : input);
     });
   }
 
   describe('primitives', function() {
-    test('int', function() {
-      this.int();
-    }, 0);
-
     test('bigint', function() {
       this.int();
     }, new asn1.bignum('0102030405060708', 16));

@@ -50,5 +50,6 @@ describe('asn1.js RFC3280', function() {
                      new asn1.bignum('462e4256bb1194dc', 16));
     assert.equal(tbs.signature.algorithm.join('.'),
                  '1.2.840.113549.1.1.5');
+    assert.equal(tbs.signature.parameters.toString('hex'), '0500');
   });
 });

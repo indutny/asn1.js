@@ -129,6 +129,12 @@ describe('asn1.js ping/pong', function() {
       );
     }, {}, {});
 
+    test('optional + any', function() {
+      this.seq().obj(
+        this.key('content').optional().any()
+      );
+    }, { content: new Buffer('0500', 'hex') });
+
     test('seqof', function() {
       var S = asn1.define('S', function() {
         this.seq().obj(

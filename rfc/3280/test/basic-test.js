@@ -107,4 +107,16 @@ describe('asn1.js RFC3280', function() {
                  'Mm4g=='
                 );
   });
+
+  it('should decode AuthorityInfoAccess', function() {
+    var data = new Buffer('305a302b06082b06010505073002861f687474703a2f2f70' +
+                          '6b692e676f6f676c652e636f6d2f47494147322e63727430' +
+                          '2b06082b06010505073001861f687474703a2f2f636c6965' +
+                          '6e7473312e676f6f676c652e636f6d2f6f637370',
+                          'hex');
+
+    var info = rfc3280.AuthorityInfoAccessSyntax.decode(data, 'der');
+
+    assert(info[0].accessMethod);
+  });
 });

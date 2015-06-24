@@ -1,5 +1,6 @@
 var assert = require('assert');
 var asn1 = require('..');
+var BN = require('bn.js');
 
 var Buffer = require('buffer').Buffer;
 
@@ -35,4 +36,36 @@ describe('asn1.js DER encoder', function() {
     });
   }, { type: 'apple', value: true }, '0101ff');
 
+  test('should encode implicit seqof', function() {
+    var Int = asn1.define('Int', function() {
+      this.int();
+    });
+    this.implicit(0).seqof(Int);
+  }, [ 1 ], 'A003020101' );
+
+  test('should encode explicit seqof', function() {
+    var Int = asn1.define('Int', function() {
+      this.int();
+    });
+    this.explicit(0).seqof(Int);
+  }, [ 1 ], 'A0053003020101' );
+
+  test('should encode BN(128) properly', function() {
+    this.int();
+  }, new BN(128), '02020080');
+
+  test('should encode int 128 properly', function() {
+    this.int();
+  }, 128, '02020080');
+
+  test('should encode 0x8011 properly', function() {
+    this.int();
+  }, 0x8011, '0203008011');
+
+  test('should omit default value in DER', function() {
+    this.seq().obj(
+      this.key('required').def(false).bool(),
+      this.key('value').int()
+    );
+  }, {required: false, value: 1}, '3003020101');
 });

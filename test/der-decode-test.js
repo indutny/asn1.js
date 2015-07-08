@@ -69,4 +69,12 @@ describe('asn1.js DER decoder', function() {
     var out = A.decode(new Buffer('020101', 'hex'), 'der');
     assert.equal(out.toString(10), '1');
   });
+
+  it('should decode an unknown oid', function() {
+    var A = asn1.define('A', function() {
+        this.objid({'1 2 3': 'known'});
+    });
+    var out = A.decode(new Buffer('06022a04', 'hex'), 'der');
+    assert.deepEqual(out, [1,2,4] );
+  });
 });

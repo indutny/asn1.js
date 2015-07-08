@@ -1,6 +1,6 @@
 {
   "name": "asn1.js",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "description": "ASN.1 encoder and decoder",
   "main": "lib/asn1.js",
   "scripts": {
@@ -23,10 +23,8 @@
   "devDependencies": {
     "mocha": "^1.14.0"
   },
-  "optionalDependencies": {
-    "bn.js": "^2.0.0"
-  },
   "dependencies": {
+    "bn.js": "^2.0.0",
     "inherits": "^2.0.1",
     "minimalistic-assert": "^1.0.0"
   }

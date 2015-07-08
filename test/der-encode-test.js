@@ -68,4 +68,17 @@ describe('asn1.js DER encoder', function() {
       this.key('value').int()
     );
   }, {required: false, value: 1}, '3003020101');
+
+  it('should encode optional and use', function() {
+    var B = asn1.define('B', function() {
+      this.int();
+    });
+
+    var A = asn1.define('A', function() {
+      this.optional().use(B);
+    });
+
+    var out = A.encode(1, 'der');
+    assert.equal(out.toString('hex'), '020101');
+  });
 });

@@ -81,4 +81,14 @@ describe('asn1.js DER encoder', function() {
     var out = A.encode(1, 'der');
     assert.equal(out.toString('hex'), '020101');
   });
+
+  test('should properly encode objid with dots', function() {
+    this.objid({
+      '1.2.398.3.10.1.1.1.2.2': 'yes'
+    });
+  }, 'yes', '060a2a830e030a0101010202');
+
+  test('should properly encode objid as array of strings', function() {
+    this.objid();
+  }, '1.2.398.3.10.1.1.1.2.2'.split('.'), '060a2a830e030a0101010202');
 });

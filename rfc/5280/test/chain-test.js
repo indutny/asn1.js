@@ -1,4 +1,3 @@
-var fs = require('fs');
 var assert = require('assert');
 var asn1 = require('../../../');
 var rfc3280 = require('../../3280');

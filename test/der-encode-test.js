@@ -130,4 +130,15 @@ describe('asn1.js DER encoder', function() {
   test('should properly encode ISO646 string', function() {
     this.iso646str();
   }, 'septic tank', '1A0B7365707469632074616E6B');
+
+  it('should not require encoder param', function() {
+     var M = asn1.define('Model', function() {
+       this.choice({
+         apple: this.bool(),
+       });
+     });
+     // Note no encoder specified, defaults to 'der'
+     var encoded = M.encode({ 'type': 'apple', 'value': true });
+     assert.deepEqual(encoded, new Buffer('0101ff', 'hex'));
+  });
 });

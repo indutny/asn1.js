@@ -146,4 +146,15 @@ describe('asn1.js DER decoder', function() {
     assert.equal(out.test1[1].num.toString(10), 2);
     assert.equal(out.test2, undefined);
   });
+
+  it('should not require decoder param', function() {
+     var M = asn1.define('Model', function() {
+       this.choice({
+         apple: this.bool(),
+       });
+     });
+     // Note no decoder specified, defaults to 'der'
+     var decoded = M.decode(new Buffer('0101ff', 'hex'));
+     assert.deepEqual(decoded, { 'type': 'apple', 'value': true });
+  });
 });

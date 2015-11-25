@@ -122,6 +122,10 @@ describe('asn1.js error', function() {
       test('int', function() {
         this.int();
       }, '', /tag of "int"/);
+
+      test('bmpstr invalid length', function() {
+        this.bmpstr();
+      }, '1e0b041f04400438043204350442', /bmpstr length mismatch/);
     });
 
     describe('composite', function() {

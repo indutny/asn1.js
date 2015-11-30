@@ -47,7 +47,7 @@ describe('asn1.js ping/pong', function() {
 
     test('numstr', function() {
       this.numstr();
-    }, '1234 5678');
+    }, '1234 5678 90');
 
     test('printstr', function() {
       this.printstr();

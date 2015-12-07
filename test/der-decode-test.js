@@ -77,4 +77,19 @@ describe('asn1.js DER decoder', function() {
     var out = A.decode(new Buffer('06022a04', 'hex'), 'der');
     assert.deepEqual(out, [1,2,4] );
   });
+
+  test('should decode indefinite length', function() {
+    this.seq().obj(
+      this.key('key').bool()
+    );
+  }, '30800101ff0000', { 'key': true });
+
+  test('should decode bmpstr', function() {
+    this.bmpstr();
+  }, '1e26004300650072007400690066006900630061' +
+     '0074006500540065006d0070006c006100740065', 'CertificateTemplate');
+
+  test('should decode bmpstr with cyrillic chars', function() {
+    this.bmpstr();
+  }, '1e0c041f04400438043204350442', 'Привет');
 });

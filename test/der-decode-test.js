@@ -84,4 +84,10 @@ describe('asn1.js DER decoder', function() {
   test('should decode bmpstr with cyrillic chars', function() {
     this.bmpstr();
   }, '1e0c041f04400438043204350442', 'Привет');
+
+  test('should properly decode objid with dots', function() {
+    this.objid({
+      '1.2.398.3.10.1.1.1.2.2': 'yes'
+    });
+  }, '060a2a830e030a0101010202', 'yes');
 });

@@ -1,9 +1,7 @@
 try {
   var asn1 = require('asn1.js');
-  var rfc3280 = require('asn1.js/rfc/3280');
 } catch (e) {
   var asn1 = require('../..');
-  var rfc3280 = require('../3280');
 }
 
 /**
@@ -11,6 +9,284 @@ try {
  */
 
 var rfc5280 = exports;
+
+
+// CertificateList  ::=  SEQUENCE  {
+//      tbsCertList          TBSCertList,
+//      signatureAlgorithm   AlgorithmIdentifier,
+//      signature            BIT STRING  }
+var CertificateList = asn1.define('CertificateList', function() {
+  this.seq().obj(
+    this.key('tbsCertList').use(TBSCertList),
+    this.key('signatureAlgorithm').use(AlgorithmIdentifier),
+    this.key('signature').bitstr()
+  );
+});
+rfc5280.CerficateList = CertificateList;
+
+// AlgorithmIdentifier  ::=  SEQUENCE  {
+//      algorithm               OBJECT IDENTIFIER,
+//      parameters              ANY DEFINED BY algorithm OPTIONAL  }
+var AlgorithmIdentifier = asn1.define('AlgorithmIdentifier', function() {
+  this.seq().obj(
+    this.key('algorithm').objid(),
+    this.key('parameters').optional().any()
+  );
+});
+rfc5280.AlgorithmIdentifier = AlgorithmIdentifier;
+
+// Certificate  ::=  SEQUENCE  {
+//      tbsCertificate       TBSCertificate,
+//      signatureAlgorithm   AlgorithmIdentifier,
+//      signature            BIT STRING  }
+var Certificate = asn1.define('Certificate', function() {
+  this.seq().obj(
+    this.key('tbsCertificate').use(TBSCertificate),
+    this.key('signatureAlgorithm').use(AlgorithmIdentifier),
+    this.key('signature').bitstr()
+  );
+});
+rfc5280.Certificate = Certificate;
+
+// TBSCertificate  ::=  SEQUENCE  {
+//      version         [0]  Version DEFAULT v1,
+//      serialNumber         CertificateSerialNumber,
+//      signature            AlgorithmIdentifier,
+//      issuer               Name,
+//      validity             Validity,
+//      subject              Name,
+//      subjectPublicKeyInfo SubjectPublicKeyInfo,
+//      issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
+//      subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
+//      extensions      [3]  Extensions OPTIONAL
+var TBSCertificate = asn1.define('TBSCertificate', function() {
+  this.seq().obj(
+    this.key('version').def('v1').explicit(0).use(Version),
+    this.key('serialNumber').int(),
+    this.key('signature').use(AlgorithmIdentifier),
+    this.key('issuer').use(Name),
+    this.key('validity').use(Validity),
+    this.key('subject').use(Name),
+    this.key('subjectPublicKeyInfo').use(SubjectPublicKeyInfo),
+    this.key('issuerUniqueID').optional().explicit(1).bitstr(),
+    this.key('subjectUniqueID').optional().explicit(2).bitstr(),
+    this.key('extensions').optional().explicit(3).seqof(Extension)
+  );
+});
+rfc5280.TBSCertificate = TBSCertificate;
+
+// Version  ::=  INTEGER  {  v1(0), v2(1), v3(2)  }
+var Version = asn1.define('Version', function() {
+  this.int({
+    0: 'v1',
+    1: 'v2',
+    2: 'v3'
+  });
+});
+rfc5280.Version = Version;
+
+// Validity ::= SEQUENCE {
+//      notBefore      Time,
+//      notAfter       Time  }
+var Validity = asn1.define('Validity', function() {
+  this.seq().obj(
+    this.key('notBefore').use(Time),
+    this.key('notAfter').use(Time)
+  );
+});
+rfc5280.Validity = Validity;
+
+// Time ::= CHOICE {
+//      utcTime        UTCTime,
+//      generalTime    GeneralizedTime }
+var Time = asn1.define('Time', function() {
+  this.choice({
+    utcTime: this.utctime(),
+    genTime: this.gentime()
+  });
+});
+rfc5280.Time = Time;
+
+// SubjectPublicKeyInfo  ::=  SEQUENCE  {
+//      algorithm            AlgorithmIdentifier,
+//      subjectPublicKey     BIT STRING  }
+var SubjectPublicKeyInfo = asn1.define('SubjectPublicKeyInfo', function() {
+  this.seq().obj(
+    this.key('algorithm').use(AlgorithmIdentifier),
+    this.key('subjectPublicKey').bitstr()
+  );
+});
+rfc5280.SubjectPublicKeyInfo = SubjectPublicKeyInfo;
+
+// TBSCertList  ::=  SEQUENCE  {
+//      version                 Version OPTIONAL,
+//      signature               AlgorithmIdentifier,
+//      issuer                  Name,
+//      thisUpdate              Time,
+//      nextUpdate              Time OPTIONAL,
+//      revokedCertificates     SEQUENCE OF SEQUENCE  {
+//           userCertificate         CertificateSerialNumber,
+//           revocationDate          Time,
+//           crlEntryExtensions      Extensions OPTIONAL
+//      }  OPTIONAL,
+//      crlExtensions           [0] Extensions OPTIONAL }
+var TBSCertList = asn1.define('TBSCertList', function() {
+  this.seq().obj(
+    this.key('version').optional().int(),
+    this.key('signature').use(AlgorithmIdentifier),
+    this.key('issuer').use(Name),
+    this.key('thisUpdate').use(Time),
+    this.key('nextUpdate').use(Time),
+    this.key('revokedCertificates').optional().seq().obj(
+      this.seq().obj(
+        this.key('userCertificate').int(),
+        this.key('revocationDate').use(Time),
+        this.key('crlEntryExtensions').optional().seqof(Extension)
+      )
+    ),
+    this.key('crlExtensions').implicit(0).optional().seqof(Extension)
+  );
+});
+rfc5280.TBSCertList = TBSCertList;
+
+// Extension  ::=  SEQUENCE  {
+//      extnID      OBJECT IDENTIFIER,
+//      critical    BOOLEAN DEFAULT FALSE,
+//      extnValue   OCTET STRING
+var Extension = asn1.define('Extension', function() {
+  this.seq().obj(
+    this.key('extnID').objid(),
+    this.key('critical').bool().def(false),
+    this.key('extnValue').octstr()
+  );
+});
+rfc5280.Extension = Extension;
+
+// Name ::= CHOICE { -- only one possibility for now --
+//      rdnSequence  RDNSequence }
+var Name = asn1.define('Name', function() {
+  this.choice({
+    rdn: this.use(RDNSequence)
+  });
+});
+rfc5280.Name = Name;
+
+// GeneralName ::= CHOICE {
+//      otherName                 [0]  AnotherName,
+//      rfc822Name                [1]  IA5String,
+//      dNSName                   [2]  IA5String,
+//      x400Address               [3]  ORAddress,
+//      directoryName             [4]  Name,
+//      ediPartyName              [5]  EDIPartyName,
+//      uniformResourceIdentifier [6]  IA5String,
+//      iPAddress                 [7]  OCTET STRING,
+//      registeredID              [8]  OBJECT IDENTIFIER }
+var GeneralName = asn1.define('GeneralName', function() {
+  this.choice({
+    otherName: this.implicit(0).use(AnotherName),
+    rfc822Name: this.implicit(1).ia5str(),
+    dNSName: this.implicit(2).ia5str(),
+    directoryName: this.explicit(4).use(Name),
+    ediPartyName: this.implicit(5).use(EDIPartyName),
+    uniformResourceIdentifier: this.implicit(6).ia5str(),
+    iPAddress: this.implicit(7).octstr(),
+    registeredID: this.implicit(8).objid()
+  });
+});
+rfc5280.GeneralName = GeneralName;
+
+// GeneralNames ::= SEQUENCE SIZE (1..MAX) OF GeneralName
+var GeneralNames = asn1.define('GeneralNames', function() {
+  this.seqof(GeneralName);
+});
+rfc5280.GeneralNames = GeneralNames;
+
+// AnotherName ::= SEQUENCE {
+//      type-id    OBJECT IDENTIFIER,
+//      value      [0] EXPLICIT ANY DEFINED BY type-id }
+var AnotherName = asn1.define('AnotherName', function() {
+  this.seq().obj(
+    this.key('type-id').objid(),
+    this.key('value').explicit(0).any()
+  );
+});
+rfc5280.AnotherName = AnotherName;
+
+// EDIPartyName ::= SEQUENCE {
+//      nameAssigner              [0]  DirectoryString OPTIONAL,
+//      partyName                 [1]  DirectoryString }
+var EDIPartyName = asn1.define('EDIPartyName', function() {
+  this.seq().obj(
+    this.key('nameAssigner').implicit(0).optional().use(DirectoryString),
+    this.key('partyName').implicit(1).use(DirectoryString)
+  );
+});
+rfc5280.EDIPartyName = EDIPartyName;
+
+// RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+var RDNSequence = asn1.define('RDNSequence', function() {
+  this.seqof(RelativeDistinguishedName);
+});
+rfc5280.RDNSequence = RDNSequence;
+
+// RelativeDistinguishedName ::=
+//      SET SIZE (1..MAX) OF AttributeTypeAndValue
+var RelativeDistinguishedName = asn1.define('RelativeDistinguishedName', function() {
+  this.setof(AttributeTypeAndValue);
+});
+rfc5280.RelativeDistinguishedName = RelativeDistinguishedName;
+
+// AttributeTypeAndValue ::= SEQUENCE {
+//      type     AttributeType,
+//      value    AttributeValue }
+var AttributeTypeAndValue = asn1.define('AttributeTypeAndValue', function() {
+  this.seq().obj(
+    this.key('type').use(AttributeType),
+    this.key('value').use(AttributeValue)
+  );
+});
+rfc5280.AttributeTypeAndValue = AttributeTypeAndValue;
+
+// Attribute               ::= SEQUENCE {
+//       type             AttributeType,
+//       values    SET OF AttributeValue }
+var Attribute = asn1.define('Attribute', function() {
+  this.seq().obj(
+    this.key('type').use(AttributeType),
+    this.key('values').setof(AttributeValue)
+  );
+});
+rfc5280.Attribute = Attribute;
+
+// AttributeType ::= OBJECT IDENTIFIER
+var AttributeType = asn1.define('AttributeType', function() {
+  this.objid();
+});
+rfc5280.AttributeType = AttributeType;
+
+// AttributeValue ::= ANY -- DEFINED BY AttributeType
+var AttributeValue = asn1.define('AttributeValue', function() {
+  this.any();
+});
+rfc5280.AttributeValue = AttributeValue;
+
+// DirectoryString ::= CHOICE {
+//       teletexString           TeletexString (SIZE (1..MAX)),
+//       printableString         PrintableString (SIZE (1..MAX)),
+//       universalString         UniversalString (SIZE (1..MAX)),
+//       utf8String              UTF8String (SIZE (1..MAX)),
+//       bmpString               BMPString (SIZE (1..MAX)) }
+var DirectoryString = asn1.define('DirectoryString', function() {
+  this.choice({
+    teletexString: this.t61str(),
+    printableString: this.printstr(),
+    universalString: this.unistr(),
+    utf8String: this.utf8str(),
+    bmpString: this.bmpstr()
+  });
+});
+rfc5280.DirectoryString = DirectoryString;
+
 
 /**
  * Extensions
@@ -49,7 +325,7 @@ rfc5280.extensions = {
     33: 'Policy Mappings',
     17: 'Subject Alternative Name',
     18: 'Issuer Alternative Name',
-     9: 'Subject Directory Attributes',
+    9: 'Subject Directory Attributes',
     19: 'Basic Constraints',
     30: 'Name Constraints',
     36: 'Policy Constraints',
@@ -69,12 +345,11 @@ rfc5280.extensions = {
 
   // Private Internet Extensions (id-pe)
   priv: {
-    // Unknown extension: 1.3.6.1.5.5.7.1.1
     prefix: [1, 3, 6, 1, 5, 5, 7],
-          1: 'Authority Information Access',
-         11: 'Subject Information Access',
-      // Unknown Extension (not documented anywhere, probably non-standard)
-      '1.1': 'Unknown Extension'
+    1: 'Authority Information Access',
+    11: 'Subject Information Access',
+    // Unknown Extension (not documented anywhere, probably non-standard)
+    '1.1': 'Unknown Extension'
   },
 
   // CRL Extensions (id-ce)
@@ -93,102 +368,55 @@ rfc5280.extensions = {
  * Standard Extensions
  */
 
-/**
- * 1
- * # Authority Key Identifier
- */
-
-var AuthorityKeyIdentifier =
-rfc5280.AuthorityKeyIdentifier = asn1.define('AuthorityKeyIdentifier', function() {
+// AuthorityKeyIdentifier ::= SEQUENCE {
+//     keyIdentifier             [0] KeyIdentifier            OPTIONAL,
+//     authorityCertIssuer       [1] GeneralNames             OPTIONAL,
+//     authorityCertSerialNumber [2] CertificateSerialNumber  OPTIONAL }
+var AuthorityKeyIdentifier = asn1.define('AuthorityKeyIdentifier', function() {
   this.seq().obj(
-    // XXX Workaround parser error:
-    this.key('_unknown').any(),
     this.key('keyIdentifier').optional().use(KeyIdentifier),
     this.key('authorityCertIssuer').optional().use(GeneralNames),
     this.key('authorityCertSerialNumber').optional().use(CertificateSerialNumber)
   );
 });
+rfc5280.AuthorityKeyIdentifier = AuthorityKeyIdentifier;
 
-/**
- * ## KeyIdentifier
- */
-
-var KeyIdentifier =
-rfc5280.KeyIdentifier = asn1.define('KeyIdentifier', function() {
+// KeyIdentifier ::= OCTET STRING
+var KeyIdentifier = asn1.define('KeyIdentifier', function() {
   this.octstr();
 });
+rfc5280.KeyIdentifier = KeyIdentifier;
 
-/**
- * ## CertificateSerialNumber
- */
-
-var CertificateSerialNumber =
-rfc5280.CertificateSerialNumber = asn1.define('CertificateSerialNumber', function() {
+// CertificateSerialNumber  ::=  INTEGER
+var CertificateSerialNumber = asn1.define('CertificateSerialNumber', function() {
   this.int();
 });
+rfc5280.CertificateSerialNumber = CertificateSerialNumber;
 
-/**
- * ## GeneralNames
- */
-
-var GeneralNames =
-rfc5280.GeneralNames = asn1.define('GeneralNames', function() {
-  this.seqof(GeneralName);
-});
-
-/**
- * ### GeneralName
- */
-
-var GeneralName =
-rfc5280.GeneralName = asn1.define('GeneralName', function() {
-  this.choice({
-    // XXX Workaround parser error:
-    _unknown: this.int(),
-    otherName: this.use(AnotherName),
-    rfc822Name: this.ia5str(),
-    dNSName: this.ia5str(),
-    x400Address: this.use(ORAddress),
-    directoryName: this.use(rfc3280.Name),
-    ediPartyName: this.use(EDIPartyName),
-    uniformResourceIdentifier: this.ia5str(),
-    iPAddress: this.octstr(),
-    registeredID: this.objid()
-  });
-});
-
-/**
- * #### AnotherName
- * Also referenced as "OtherName"
- */
-
-var AnotherName =
-rfc5280.AnotherName = asn1.define('AnotherName', function() {
-  this.seq().obj(
-    this.key('typeId').objid(),
-    this.key('value').explicit(0).any()
-  );
-});
-
-/**
- * #### ORAddress
- */
-
-var ORAddress =
-rfc5280.ORAddress = asn1.define('ORAddress', function() {
+// ORAddress ::= SEQUENCE {
+//    built-in-standard-attributes BuiltInStandardAttributes,
+//    built-in-domain-defined-attributes    BuiltInDomainDefinedAttributes OPTIONAL,
+//    extension-attributes ExtensionAttributes OPTIONAL }
+var ORAddress = asn1.define('ORAddress', function() {
   this.seq().obj(
     this.key('builtInStandardAttributes').use(BuiltInStandardAttributes),
     this.key('builtInDomainDefinedAttributes').optional().use(BuiltInDomainDefinedAttributes),
     this.key('extensionAttributes').optional().use(ExtensionAttributes)
   );
 });
+rfc5280.ORAddress = ORAddress;
 
-/**
- * ##### BuiltInStandardAttributes
- */
-
-var BuiltInStandardAttributes =
-rfc5280.BuiltInStandardAttributes = asn1.define('BuiltInStandardAttributes', function() {
+// BuiltInStandardAttributes ::= SEQUENCE {
+//    country-name                  CountryName OPTIONAL,
+//    administration-domain-name    AdministrationDomainName OPTIONAL,
+//    network-address           [0] IMPLICIT NetworkAddress OPTIONAL,
+//    terminal-identifier       [1] IMPLICIT TerminalIdentifier OPTIONAL,
+//    private-domain-name       [2] PrivateDomainName OPTIONAL,
+//    organization-name         [3] IMPLICIT OrganizationName OPTIONAL,
+//    numeric-user-identifier   [4] IMPLICIT NumericUserIdentifier OPTIONAL,
+//    personal-name             [5] IMPLICIT PersonalName OPTIONAL,
+//    organizational-unit-names [6] IMPLICIT OrganizationalUnitNames OPTIONAL }
+var BuiltInStandardAttributes = asn1.define('BuiltInStandardAttributes', function() {
   this.seq().obj(
     this.key('countryName').optional().use(CountryName),
     this.key('administrationDomainName').optional().use(AdministrationDomainName),
@@ -201,94 +429,78 @@ rfc5280.BuiltInStandardAttributes = asn1.define('BuiltInStandardAttributes', fun
     this.key('organizationalUnitNames').optional().use(OrganizationalUnitNames)
   );
 });
+rfc5280.BuiltInStandardAttributes = BuiltInStandardAttributes;
 
-/**
- * ###### CountryName
- */
-
-var CountryName =
-rfc5280.CountryName = asn1.define('CountryName', function() {
+// CountryName ::= CHOICE {
+//    x121-dcc-code         NumericString,
+//    iso-3166-alpha2-code  PrintableString }
+var CountryName = asn1.define('CountryName', function() {
   this.choice({
     x121DccCode: this.numstr(),
     iso3166Alpha2Code: this.printstr()
   });
 });
+rfc5280.CountryName = CountryName;
 
-/**
- * ###### AdministrationDomainName
- */
 
-var AdministrationDomainName =
-rfc5280.AdministrationDomainName = asn1.define('AdministrationDomainName', function() {
+// AdministrationDomainName ::= CHOICE {
+//    numeric   NumericString,
+//    printable PrintableString }
+var AdministrationDomainName = asn1.define('AdministrationDomainName', function() {
   this.choice({
     numeric: this.numstr(),
     printable: this.printstr()
   });
 });
+rfc5280.AdministrationDomainName = AdministrationDomainName;
 
-/**
- * ###### NetworkAddress
- */
-
-var NetworkAddress =
-rfc5280.NetworkAddress = asn1.define('NetworkAddress', function() {
+// NetworkAddress ::= X121Address
+var NetworkAddress = asn1.define('NetworkAddress', function() {
   this.use(X121Address);
 });
+rfc5280.NetworkAddress = NetworkAddress;
 
-/**
- * ###### X121Address
- */
-
-var X121Address =
-rfc5280.X121Address = asn1.define('X121Address', function() {
+// X121Address ::= NumericString
+var X121Address = asn1.define('X121Address', function() {
   this.numstr();
 });
+rfc5280.X121Address = X121Address;
 
-/**
- * ###### TerminalIdentifier
- */
-
-var TerminalIdentifier =
-rfc5280.TerminalIdentifier = asn1.define('TerminalIdentifier', function() {
+// TerminalIdentifier ::= PrintableString
+var TerminalIdentifier = asn1.define('TerminalIdentifier', function() {
   this.printstr();
 });
+rfc5280.TerminalIdentifier = TerminalIdentifier;
 
-/**
- * ###### PrivateDomainName
- */
-
-var PrivateDomainName =
-rfc5280.PrivateDomainName = asn1.define('PrivateDomainName', function() {
+// PrivateDomainName ::= CHOICE {
+//    numeric   NumericString,
+//    printable PrintableString }
+var PrivateDomainName = asn1.define('PrivateDomainName', function() {
   this.choice({
     numeric: this.numstr(),
     printable: this.printstr()
   });
 });
+rfc5280.PrivateDomainName = PrivateDomainName;
 
-/**
- * ###### OrganizationName
- */
-
-var OrganizationName =
-rfc5280.OrganizationName = asn1.define('OrganizationName', function() {
+// OrganizationName ::= PrintableString
+var OrganizationName = asn1.define('OrganizationName', function() {
   this.printstr();
 });
+rfc5280.OrganizationName = OrganizationName;
 
-/**
- * ###### NumericUserIdentifier
- */
-
-var NumericUserIdentifier =
-rfc5280.NumericUserIdentifier = asn1.define('NumericUserIdentifier', function() {
+// NumericUserIdentifier ::= NumericString
+var NumericUserIdentifier = asn1.define('NumericUserIdentifier', function() {
   this.numstr();
 });
+rfc5280.NumericUserIdentifier = NumericUserIdentifier;
 
-/**
- * ###### PersonalName
- */
-
-var PersonalName =
-rfc5280.PersonalName = asn1.define('PersonalName', function() {
+// PersonalName ::= SET {
+//    surname     [0] IMPLICIT PrintableString,
+//    given-name  [1] IMPLICIT PrintableString OPTIONAL,
+//    initials    [2] IMPLICIT PrintableString OPTIONAL,
+//    generation-qualifier [3] IMPLICIT PrintableString OPTIONAL }
+var PersonalName = asn1.define('PersonalName', function() {
   this.set().obj(
     this.key('surname').implicit().printstr(),
     this.key('givenName').implicit().printstr(),
@@ -296,362 +508,259 @@ rfc5280.PersonalName = asn1.define('PersonalName', function() {
     this.key('generationQualifier').implicit().printstr()
   );
 });
+rfc5280.PersonalName = PersonalName;
 
-/**
- * ###### OrganizationalUnitNames
- */
-
-var OrganizationalUnitNames =
-rfc5280.OrganizationalUnitNames = asn1.define('OrganizationalUnitNames', function() {
+// OrganizationalUnitNames ::= SEQUENCE SIZE (1..ub-organizational-units)
+//                              OF OrganizationalUnitName
+var OrganizationalUnitNames = asn1.define('OrganizationalUnitNames', function() {
   this.seqof(OrganizationalUnitName);
 });
+rfc5280.OrganizationalUnitNames = OrganizationalUnitNames;
 
-/**
- * ####### OrganizationalUnitName
- */
-
-var OrganizationalUnitName =
-rfc5280.OrganizationalUnitName = asn1.define('OrganizationalUnitName', function() {
+// OrganizationalUnitName ::= PrintableString (SIZE
+//                     (1..ub-organizational-unit-name-length))
+var OrganizationalUnitName = asn1.define('OrganizationalUnitName', function() {
   this.printstr();
 });
+rfc5280.OrganizationalUnitName = OrganizationalUnitName;
 
-/**
- * ##### BuiltInDomainDefinedAttributes
- */
-
-var BuiltInDomainDefinedAttributes =
-rfc5280.BuiltInDomainDefinedAttributes = asn1.define('BuiltInDomainDefinedAttributes', function() {
+// uiltInDomainDefinedAttributes ::= SEQUENCE SIZE
+//                     (1..ub-domain-defined-attributes) OF BuiltInDomainDefinedAttribute
+var BuiltInDomainDefinedAttributes = asn1.define('BuiltInDomainDefinedAttributes', function() {
   this.seqof(BuiltInDomainDefinedAttribute);
 });
+rfc5280.BuiltInDomainDefinedAttributes = BuiltInDomainDefinedAttributes;
 
-/**
- * ###### BuiltInDomainDefinedAttribute
- */
-
-var BuiltInDomainDefinedAttribute =
-rfc5280.BuiltInDomainDefinedAttribute = asn1.define('BuiltInDomainDefinedAttribute', function() {
+// BuiltInDomainDefinedAttribute ::= SEQUENCE {
+//    type PrintableString (SIZE (1..ub-domain-defined-attribute-type-length)),
+//    value PrintableString (SIZE (1..ub-domain-defined-attribute-value-length)) }
+var BuiltInDomainDefinedAttribute = asn1.define('BuiltInDomainDefinedAttribute', function() {
   this.seq().obj(
     this.key('type').printstr(),
     this.key('value').printstr()
   );
 });
+rfc5280.BuiltInDomainDefinedAttribute = BuiltInDomainDefinedAttribute;
 
-/**
- * ## ExtensionAttributes
- */
 
-var ExtensionAttributes =
-rfc5280.ExtensionAttributes = asn1.define('ExtensionAttributes', function() {
+// ExtensionAttributes ::= SET SIZE (1..ub-extension-attributes) OF
+//                ExtensionAttribute
+var ExtensionAttributes = asn1.define('ExtensionAttributes', function() {
   this.seqof(ExtensionAttribute);
 });
+rfc5280.ExtensionAttributes = ExtensionAttributes;
 
-/**
- * ### ExtensionAttribute
- */
-
-var ExtensionAttribute =
-rfc5280.ExtensionAttribute = asn1.define('ExtensionAttribute', function() {
+// ExtensionAttribute ::=  SEQUENCE {
+//    extension-attribute-type [0] IMPLICIT INTEGER,
+//    extension-attribute-value [1] ANY DEFINED BY extension-attribute-type }
+var ExtensionAttribute = asn1.define('ExtensionAttribute', function() {
   this.seq().obj(
     this.key('extensionAttributeType').implicit().int(),
     this.key('extensionAttributeValue').any().implicit().int()
   );
 });
+rfc5280.ExtensionAttribute = ExtensionAttribute;
 
-/**
- * #### EDIPartyName
- */
-
-var EDIPartyName =
-rfc5280.EDIPartyName = asn1.define('EDIPartyName', function() {
-  this.seq().obj(
-    this.key('nameAssigner').optional().use(DirectoryString),
-    this.key('partyName').use(DirectoryString)
-  );
-});
-
-/**
- * ##### DirectoryString
- */
-
-var DirectoryString =
-rfc5280.DirectoryString = asn1.define('DirectoryString', function() {
-  this.choice({
-    teletexString: this.t61str(),
-    printableString: this.printstr(),
-    universalString: this.unistr(),
-    utf8String: this.utf8str(),
-    bmpString: this.bmpstr()
-  });
-});
-
-/**
- * 2
- * # Subject Key Identifier
- */
-
-var SubjectKeyIdentifier =
-rfc5280.SubjectKeyIdentifier = asn1.define('SubjectKeyIdentifier', function() {
+// SubjectKeyIdentifier ::= KeyIdentifier
+var SubjectKeyIdentifier = asn1.define('SubjectKeyIdentifier', function() {
   this.use(KeyIdentifier);
 });
+rfc5280.SubjectKeyIdentifier = SubjectKeyIdentifier;
 
-/**
- * 3
- * # Key Usage
- */
-
-var KeyUsage =
-rfc5280.KeyUsage = asn1.define('KeyUsage', function() {
+// KeyUsage ::= BIT STRING {
+//      digitalSignature        (0),
+//      nonRepudiation          (1),  -- recent editions of X.509 have
+//                                    -- renamed this bit to contentCommitment
+//      keyEncipherment         (2),
+//      dataEncipherment        (3),
+//      keyAgreement            (4),
+//      keyCertSign             (5),
+//      cRLSign                 (6),
+//      encipherOnly            (7),
+//      decipherOnly            (8) }
+var KeyUsage = asn1.define('KeyUsage', function() {
   this.bitstr();
 });
+rfc5280.KeyUsage = KeyUsage;
 
-/**
- * 4
- * # Certificate Policies
- */
-
-var CertificatePolicies =
-rfc5280.CertificatePolicies = asn1.define('CertificatePolicies', function() {
+// CertificatePolicies ::= SEQUENCE SIZE (1..MAX) OF PolicyInformation
+var CertificatePolicies = asn1.define('CertificatePolicies', function() {
   this.seqof(PolicyInformation);
 });
+rfc5280.CertificatePolicies = CertificatePolicies;
 
-/**
- * ## Policy Information
- */
-
-var PolicyInformation =
-rfc5280.PolicyInformation = asn1.define('PolicyInformation', function() {
+// PolicyInformation ::= SEQUENCE {
+//      policyIdentifier   CertPolicyId,
+//      policyQualifiers   SEQUENCE SIZE (1..MAX) OF PolicyQualifierInfo OPTIONAL }
+var PolicyInformation = asn1.define('PolicyInformation', function() {
   this.seq().obj(
     this.key('policyIdentifier').use(CertPolicyId),
     this.key('policyQualifiers').use(PolicyQualifiers)
   );
 });
+rfc5280.PolicyInformation = PolicyInformation;
 
-/**
- * ## Cert Policy Id
- */
-
-var CertPolicyId =
-rfc5280.CertPolicyId = asn1.define('CertPolicyId', function() {
+// CertPolicyId ::= OBJECT IDENTIFIER
+var CertPolicyId = asn1.define('CertPolicyId', function() {
   this.objid();
 });
+rfc5280.CertPolicyId = CertPolicyId;
 
-
-/**
- * ### Policy Qualifiers
- */
-
-var PolicyQualifiers =
-rfc5280.PolicyQualifiers = asn1.define('PolicyQualifiers', function() {
+var PolicyQualifiers = asn1.define('PolicyQualifiers', function() {
   this.seqof(PolicyQualifierInfo);
 });
+rfc5280.PolicyQualifiers = PolicyQualifiers;
 
-/**
- * #### Policy Qualifier Info
- */
-
-var PolicyQualifierInfo =
-rfc5280.PolicyQualifierInfo = asn1.define('PolicyQualifierInfo', function() {
+// PolicyQualifierInfo ::= SEQUENCE {
+//      policyQualifierId  PolicyQualifierId,
+//      qualifier          ANY DEFINED BY policyQualifierId }
+var PolicyQualifierInfo = asn1.define('PolicyQualifierInfo', function() {
   this.seq().obj(
     this.key('policyQualifierId').use(PolicyQualifierId),
     this.key('qualifier').any().use(PolicyQualifierId)
   );
 });
+rfc5280.PolicyQualifierInfo = PolicyQualifierInfo;
 
-/**
- * ##### Policy Qualifier Id
- */
-
-var PolicyQualifierId =
-rfc5280.PolicyQualifierId = asn1.define('PolicyQualifierId', function() {
+// PolicyQualifierId ::= OBJECT IDENTIFIER
+var PolicyQualifierId = asn1.define('PolicyQualifierId', function() {
   this.objid();
 });
+rfc5280.PolicyQualifierId = PolicyQualifierId;
 
-/**
- * 5
- * # Policy Mappings
- */
-
-var PolicyMappings =
-rfc5280.PolicyMappings = asn1.define('PolicyMappings', function() {
+// PolicyMappings ::= SEQUENCE SIZE (1..MAX) OF SEQUENCE {
+//      issuerDomainPolicy      CertPolicyId,
+//      subjectDomainPolicy     CertPolicyId }
+var PolicyMappings = asn1.define('PolicyMappings', function() {
   this.seqof(PolicyMapping);
 });
+rfc5280.PolicyMappings = PolicyMappings;
 
-/**
- * ## Policy Mapping
- */
-
-var PolicyMapping =
-rfc5280.PolicyMapping = asn1.define('PolicyMapping', function() {
+var PolicyMapping = asn1.define('PolicyMapping', function() {
   this.seq().obj(
     this.key('issuerDomainPolicy').use(CertPolicyId),
     this.key('subjectDomainPolicy').use(CertPolicyId)
   );
 });
+rfc5280.PolicyMapping = PolicyMapping;
 
-/**
- * 6
- * # Subject Alternative Name
- */
-
-var SubjectAlternativeName =
-rfc5280.SubjectAlternativeName = asn1.define('SubjectAlternativeName', function() {
+// SubjectAltName ::= GeneralNames
+var SubjectAlternativeName = asn1.define('SubjectAlternativeName', function() {
   this.use(GeneralNames);
 });
+rfc5280.SubjectAlternativeName = SubjectAlternativeName;
 
-/**
- * 7
- * # Issuer Alternative Name
- */
-
-var IssuerAlternativeName =
-rfc5280.IssuerAlternativeName = asn1.define('IssuerAlternativeName', function() {
+// IssuerAltName ::= GeneralNames
+var IssuerAlternativeName = asn1.define('IssuerAlternativeName', function() {
   this.use(GeneralNames);
 });
+rfc5280.IssuerAlternativeName = IssuerAlternativeName;
 
-/**
- * 8
- * # Subject Directory Attributes
- */
-
-var SubjectDirectoryAttributes =
-rfc5280.SubjectDirectoryAttributes = asn1.define('SubjectDirectoryAttributes', function() {
+// SubjectDirectoryAttributes ::= SEQUENCE SIZE (1..MAX) OF Attribute
+var SubjectDirectoryAttributes = asn1.define('SubjectDirectoryAttributes', function() {
   this.seqof(Attribute);
 });
+rfc5280.SubjectDirectoryAttributes = SubjectDirectoryAttributes;
 
-/**
- * ## Attribute
- */
-
-var AttributeTypeAndValue = rfc5280.AttributeTypeAndValue = rfc3280.AttributeTypeAndValue;
-var Attribute = rfc5280.AttributeTypeAndValue = AttributeTypeAndValue;
-
-/**
- * 9
- * # Basic Constraints
- */
-
-var BasicConstraints =
-rfc5280.BasicConstraints = asn1.define('BasicConstraints', function() {
+// BasicConstraints ::= SEQUENCE {
+//         cA                      BOOLEAN DEFAULT FALSE,
+//         pathLenConstraint       INTEGER (0..MAX) OPTIONAL }
+var BasicConstraints = asn1.define('BasicConstraints', function() {
   this.seq().obj(
     this.key('cA').bool().def(false),
     this.key('pathLenConstraint').optional().int()
   );
 });
+rfc5280.BasicConstraints = BasicConstraints;
 
-/**
- * 10
- * # Name Constraints
- */
-
-var NameConstraints =
-rfc5280.NameConstraints = asn1.define('NameConstraints', function() {
+// NameConstraints ::= SEQUENCE {
+//            permittedSubtrees       [0]     GeneralSubtrees OPTIONAL,
+//            excludedSubtrees        [1]     GeneralSubtrees OPTIONAL }
+var NameConstraints = asn1.define('NameConstraints', function() {
   this.seq().obj(
     this.key('permittedSubtrees').optiona().use(GeneralSubtrees),
     this.key('excludedSubtrees').optional().use(GeneralSubtrees)
   );
 });
+rfc5280.NameConstraints = NameConstraints;
 
-/**
- * ## General Subtrees
- */
-
-var GeneralSubtrees =
-rfc5280.GeneralSubtrees = asn1.define('GeneralSubtrees', function() {
+// GeneralSubtrees ::= SEQUENCE SIZE (1..MAX) OF GeneralSubtree
+var GeneralSubtrees = asn1.define('GeneralSubtrees', function() {
   this.seqof(GeneralSubtree);
 });
+rfc5280.GeneralSubtrees = GeneralSubtrees;
 
-/**
- * ### General Subtree
- */
-
-var GeneralSubtree =
-rfc5280.GeneralSubtree = asn1.define('GeneralSubtree', function() {
+// GeneralSubtree ::= SEQUENCE {
+//            base                    GeneralName,
+//            minimum         [0]     BaseDistance DEFAULT 0,
+//            maximum         [1]     BaseDistance OPTIONAL }
+var GeneralSubtree = asn1.define('GeneralSubtree', function() {
   this.seq().obj(
     this.key('base').use(GeneralName),
     this.key('minimum').default(0).use(BaseDistance),
     this.key('maximum').optional().use(BaseDistance)
   );
 });
+rfc5280.GeneralSubtree = GeneralSubtree;
 
-/**
- * #### Base Distance
- */
-
-var BaseDistance =
-rfc5280.BaseDistance = asn1.define('BaseDistance', function() {
+// BaseDistance ::= INTEGER
+var BaseDistance = asn1.define('BaseDistance', function() {
   this.int();
 });
+rfc5280.BaseDistance = BaseDistance;
 
-/**
- * 11
- * # Policy Constraints
- */
-
-var PolicyConstraints =
-rfc5280.PolicyConstraints = asn1.define('PolicyConstraints', function() {
+// PolicyConstraints ::= SEQUENCE {
+//         requireExplicitPolicy           [0] SkipCerts OPTIONAL,
+//         inhibitPolicyMapping            [1] SkipCerts OPTIONAL }
+var PolicyConstraints = asn1.define('PolicyConstraints', function() {
   this.seq().obj(
     this.key('requireExplicitPolicy').optional().use(SkipCerts),
     this.key('inhibitPolicyMapping').optional().use(SkipCerts)
   );
 });
+rfc5280.PolicyConstraints = PolicyConstraints;
 
-/**
- * ## Skip Certs
- */
-
-var SkipCerts =
-rfc5280.SkipCerts = asn1.define('SkipCerts', function() {
+// SkipCerts ::= INTEGER
+var SkipCerts = asn1.define('SkipCerts', function() {
   this.int();
 });
+rfc5280.SkipCerts = SkipCerts;
 
-/**
- * 12
- * # Extended Key Usage
- */
-
-var ExtendedKeyUsage =
-rfc5280.ExtendedKeyUsage = asn1.define('ExtendedKeyUsage', function() {
+// ExtKeyUsageSyntax ::= SEQUENCE SIZE (1..MAX) OF KeyPurposeId
+var ExtendedKeyUsage = asn1.define('ExtendedKeyUsage', function() {
   this.seqof(KeyPurposeId);
 });
+rfc5280.ExtendedKeyUsage = ExtendedKeyUsage;
 
-/**
- * ## Key Purpose Id
- */
-
-var KeyPurposeId =
-rfc5280.KeyPurposeId = asn1.define('KeyPurposeId', function() {
+// KeyPurposeId ::= OBJECT IDENTIFIER
+var KeyPurposeId = asn1.define('KeyPurposeId', function() {
   this.objid();
 });
+rfc5280.KeyPurposeId = KeyPurposeId;
 
-/**
- * 13
- * # CRL Distribution Points
- */
-
-var CRLDistributionPoints =
-rfc5280.CRLDistributionPoints = asn1.define('CRLDistributionPoints', function() {
+// RLDistributionPoints ::= SEQUENCE SIZE (1..MAX) OF DistributionPoint
+var CRLDistributionPoints = asn1.define('CRLDistributionPoints', function() {
   this.seqof(DistributionPoint);
 });
+rfc5280.CRLDistributionPoints = CRLDistributionPoints;
 
-/**
- * ## Distribution Point
- */
-
-var DistributionPoint =
-rfc5280.DistributionPoint = asn1.define('DistributionPoint', function() {
+// DistributionPoint ::= SEQUENCE {
+//         distributionPoint       [0]     DistributionPointName OPTIONAL,
+//         reasons                 [1]     ReasonFlags OPTIONAL,
+//         cRLIssuer               [2]     GeneralNames OPTIONAL }
+var DistributionPoint = asn1.define('DistributionPoint', function() {
   this.seq().obj(
     this.key('distributionPoint').optional().use(DistributionPointName),
     this.key('reasons').optional().use(ReasonFlags),
     this.key('cRLIssuer').optional().use(GeneralNames)
   );
 });
+rfc5280.DistributionPoint = DistributionPoint;
 
-/**
- * ### Distribution Point Name
- */
-
-var DistributionPointName =
-rfc5280.DistributionPointName = asn1.define('DistributionPointName', function() {
+// DistributionPointName ::= CHOICE {
+//         fullName                [0]     GeneralNames,
+//         nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
+var DistributionPointName = asn1.define('DistributionPointName', function() {
   this.choice({
     // XXX Workaround parser error:
     _unknown: this.any(),
@@ -659,125 +768,83 @@ rfc5280.DistributionPointName = asn1.define('DistributionPointName', function() 
     nameRelativeToCRLIssuer: this.use(RelativeDistinguishedName)
   });
 });
+rfc5280.DistributionPointName = DistributionPointName;
 
-/**
- * #### Relative Distinguished Name
- */
-
-var RelativeDistinguishedName =
-rfc5280.RelativeDistinguishedName = rfc3280.RelativeDistinguishedName;
-
-var RelativeDistinguishedName =
-rfc5280.RelativeDistinguishedName = asn1.define('RelativeDistinguishedName', function() {
-  this.setof(AttributeTypeAndValue);
-});
-
-/**
- * ### Reason Flags
- */
-
-var ReasonFlags =
-rfc5280.ReasonFlags = asn1.define('ReasonFlags', function() {
+// ReasonFlags ::= BIT STRING {
+//         unused                  (0),
+//         keyCompromise           (1),
+//         cACompromise            (2),
+//         affiliationChanged      (3),
+//         superseded              (4),
+//         cessationOfOperation    (5),
+//         certificateHold         (6),
+//         privilegeWithdrawn      (7),
+//         aACompromise            (8) }
+var ReasonFlags = asn1.define('ReasonFlags', function() {
   this.bitstr();
 });
+rfc5280.ReasonFlags = ReasonFlags;
 
-/**
- * 14
- * # Inhibit anyPolicy
- */
-
-var InhibitAnyPolicy =
-rfc5280.InhibitAnyPolicy = asn1.define('InhibitAnyPolicy', function() {
+// InhibitAnyPolicy ::= SkipCerts
+var InhibitAnyPolicy = asn1.define('InhibitAnyPolicy', function() {
   this.use(SkipCerts);
 });
+rfc5280.InhibitAnyPolicy = InhibitAnyPolicy;
 
-/**
- * 15
- * # Freshest CRL
- */
-
-var FreshestCRL =
-rfc5280.FreshestCRL = asn1.define('FreshestCRL', function() {
+// FreshestCRL ::= CRLDistributionPoints
+var FreshestCRL = asn1.define('FreshestCRL', function() {
   this.use(CRLDistributionPoints);
 });
+rfc5280.FreshestCRL = FreshestCRL;
 
-/**
- * Private Internet Extensions
- */
-
-/**
- * 16
- * # Authority Information Access
- */
-
-var AuthorityInformationAccess =
-rfc5280.AuthorityInformationAccess = asn1.define('AuthorityInformationAccess', function() {
+// AuthorityInfoAccessSyntax  ::=
+//         SEQUENCE SIZE (1..MAX) OF AccessDescription
+var AuthorityInfoAccessSyntax = asn1.define('AuthorityInfoAccessSyntax', function() {
   this.seqof(AccessDescription);
 });
+rfc5280.AuthorityInfoAccessSyntax = AuthorityInfoAccessSyntax;
 
-/**
- * ## Access Description
- */
-
-var AccessDescription =
-rfc5280.AccessDescription = asn1.define('AccessDescription', function() {
+// AccessDescription  ::=  SEQUENCE {
+//         accessMethod          OBJECT IDENTIFIER,
+//         accessLocation        GeneralName  }
+var AccessDescription = asn1.define('AccessDescription', function() {
   this.seq().obj(
     this.key('accessMethod').objid(),
     this.key('accessLocation').use(GeneralName)
   );
 });
+rfc5280.AccessDescription = AccessDescription;
 
-/**
- * 17
- * # Subject Information Access
- */
-
-var SubjectInformationAccess =
-rfc5280.SubjectInformationAccess = asn1.define('SubjectInformationAccess', function() {
+// SubjectInfoAccessSyntax  ::=
+//            SEQUENCE SIZE (1..MAX) OF AccessDescription
+var SubjectInformationAccess = asn1.define('SubjectInformationAccess', function() {
   this.seqof(AccessDescription);
 });
-
-/**
- * XXX
- * # Unknown Extension
- */
-
-var UnknownExtension =
-rfc5280.UnknownExtension = asn1.define('UnknownExtension', function() {
-  this.any();
-});
+rfc5280.SubjectInformationAccess = SubjectInformationAccess;
 
 /**
  * CRL Extensions
  */
 
-/**
- * 1
- * # CRL Number
- */
-
-var CRLNumber =
-rfc5280.CRLNumber = asn1.define('CRLNumber', function() {
+// CRLNumber ::= INTEGER
+var CRLNumber = asn1.define('CRLNumber', function() {
   this.int();
 });
+rfc5280.CRLNumber = CRLNumber;
 
-/**
- * 2
- * # Delta CRL Indicator
- */
-
-var DeltaCRLIndicator =
-rfc5280.DeltaCRLIndicator = asn1.define('DeltaCRLIndicator', function() {
+var DeltaCRLIndicator = asn1.define('DeltaCRLIndicator', function() {
   this.use(CRLNumber);
 });
+rfc5280.DeltaCRLIndicator = DeltaCRLIndicator;
 
-/**
- * 3
- * # Issuing Distribution Point
- */
-
-var IssuingDistributionPoint =
-rfc5280.IssuingDistributionPoint = asn1.define('IssuingDistributionPoint', function() {
+// IssuingDistributionPoint ::= SEQUENCE {
+//         distributionPoint          [0] DistributionPointName OPTIONAL,
+//         onlyContainsUserCerts      [1] BOOLEAN DEFAULT FALSE,
+//         onlyContainsCACerts        [2] BOOLEAN DEFAULT FALSE,
+//         onlySomeReasons            [3] ReasonFlags OPTIONAL,
+//         indirectCRL                [4] BOOLEAN DEFAULT FALSE,
+//         onlyContainsAttributeCerts [5] BOOLEAN DEFAULT FALSE }
+var IssuingDistributionPoint = asn1.define('IssuingDistributionPoint', function() {
   this.seq().obj(
     this.key('distributionPoint').use(DistributionPointName),
     this.key('onlyContainsUserCerts').def(false).bool(),
@@ -787,36 +854,44 @@ rfc5280.IssuingDistributionPoint = asn1.define('IssuingDistributionPoint', funct
     this.key('onlyContainsAttributeCerts').def(false).bool()
   );
 });
+rfc5280.IssuingDistributionPoint = IssuingDistributionPoint;
 
-/**
- * 4
- * # Reason Code
- */
-
-var ReasonCode =
-rfc5280.ReasonCode = asn1.define('ReasonCode', function() {
+// CRLReason ::= ENUMERATED {
+//         unspecified             (0),
+//         keyCompromise           (1),
+//         cACompromise            (2),
+//         affiliationChanged      (3),
+//         superseded              (4),
+//         cessationOfOperation    (5),
+//         certificateHold         (6),
+//         -- value 7 is not used
+//         removeFromCRL           (8),
+//         privilegeWithdrawn      (9),
+//         aACompromise           (10) }
+var ReasonCode = asn1.define('ReasonCode', function() {
   this.enum();
 });
+rfc5280.ReasonCode = ReasonCode;
 
-/**
- * 5
- * # Invalidity Date
- */
-
-var InvalidityDate =
-rfc5280.InvalidityDate = asn1.define('InvalidityDate', function() {
+// InvalidityDate ::=  GeneralizedTime
+var InvalidityDate = asn1.define('InvalidityDate', function() {
   this.gentime();
 });
+rfc5280.InvalidityDate = InvalidityDate;
 
-/**
- * 6
- * # Certificate Issuer
- */
-
-var CertificateIssuer =
-rfc5280.CertificateIssuer = asn1.define('CertificateIssuer', function() {
+// CertificateIssuer ::=     GeneralNames
+var CertificateIssuer = asn1.define('CertificateIssuer', function() {
   this.use(GeneralNames);
 });
+rfc5280.CertificateIssuer = CertificateIssuer;
+
+// Not in spec.
+// Just a catchall
+var UnknownExtension = asn1.define('UnknownExtension', function() {
+  this.any();
+});
+rfc5280.UnknownExtension = UnknownExtension;
+
 
 /**
  * Create Extension Decoders
@@ -919,7 +994,7 @@ rfc5280.decodeExtensions = function(cert, format, options) {
         decoded: ext.parse
           ? ext.parse(decoded, cert, ext, edata)
           : decoded,
-        raw: edata.extnValue
+          raw: edata.extnValue
       };
 
       // Tack on some useful info

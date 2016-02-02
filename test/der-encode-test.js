@@ -100,4 +100,18 @@ describe('asn1.js DER encoder', function() {
   test('should properly encode bmpstr with cyrillic chars', function() {
     this.bmpstr();
   }, 'Привет', '1e0c041f04400438043204350442');
+
+  it('should encode encapsulated models', function() {
+    var B = asn1.define('B', function() {
+      this.seq().obj(
+        this.key('nested').int()
+      );
+    });
+    var A = asn1.define('A', function() {
+      this.octstr().contains(B);
+    });
+
+    var out = A.encode({ nested: 5 }, 'der')
+    assert.equal(out.toString('hex'), '04053003020105');
+  });
 });

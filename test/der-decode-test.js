@@ -93,15 +93,15 @@ describe('asn1.js DER decoder', function() {
 
   it('should decode encapsulated models', function() {
     var B = asn1.define('B', function() {
-      this.int();
-    });
-
-    var A = asn1.define('A', function() {
       this.seq().obj(
-        this.key('nested').octstr().contains(B));
+        this.key('nested').int()
+      );
+    });
+    var A = asn1.define('A', function() {
+      this.octstr().contains(B);
     });
 
-    var out = A.decode(new Buffer('30050403020105', 'hex'), 'der');
+    var out = A.decode(new Buffer('04053003020105', 'hex'), 'der');
     assert.equal(out.nested.toString(10), '5');
   });
 });

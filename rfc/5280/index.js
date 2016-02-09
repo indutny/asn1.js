@@ -1,14 +1,41 @@
-try {
+  try {
   var asn1 = require('asn1.js');
 } catch (e) {
   var asn1 = require('../..');
 }
 
 /**
- * RFC5280 X509 Extension Definitions
+ * RFC5280 X509 and Extension Definitions
  */
 
 var rfc5280 = exports;
+
+// OIDs
+var x509OIDs = {
+  '2 5 29 9': 'subjectDirectoryAttributes',
+  '2 5 29 14': 'subjectKeyIdentifier',
+  '2 5 29 15': 'keyUsage',
+  '2 5 29 17': 'subjectAlternativeName',
+  '2 5 29 18': 'issuerAlternativeName',
+  '2 5 29 19': 'basicConstraints',
+  '2 5 29 20': 'cRLNumber',
+  '2 5 29 21': 'reasonCode',
+  '2 5 29 24': 'invalidityDate',
+  '2 5 29 27': 'deltaCRLIndicator',
+  '2 5 29 28': 'issuingDistributionPoint',
+  '2 5 29 29': 'certificateIssuer',
+  '2 5 29 30': 'nameConstraints',
+  '2 5 29 31': 'cRLDistributionPoints',
+  '2 5 29 32': 'certificatePolicies',
+  '2 5 29 33': 'policyMappings',
+  '2 5 29 35': 'authorityKeyIdentifier',
+  '2 5 29 36': 'policyConstraints',
+  '2 5 29 37': 'extendedKeyUsage',
+  '2 5 29 46': 'freshestCRL',
+  '2 5 29 54': 'inhibitAnyPolicy',
+  '1 3 6 1 5 5 7 1 1': 'authorityInformationAccess',
+  '1 3 6 1 5 5 7 11': 'subjectInformationAccess'
+};
 
 
 // CertificateList  ::=  SEQUENCE  {
@@ -152,12 +179,39 @@ rfc5280.TBSCertList = TBSCertList;
 // Extension  ::=  SEQUENCE  {
 //      extnID      OBJECT IDENTIFIER,
 //      critical    BOOLEAN DEFAULT FALSE,
-//      extnValue   OCTET STRING
+//      extnValue   OCTET STRING }
 var Extension = asn1.define('Extension', function() {
   this.seq().obj(
-    this.key('extnID').objid(),
+    this.key('extnID').objid(x509OIDs),
     this.key('critical').bool().def(false),
-    this.key('extnValue').octstr()
+    this.key('extnValue').octstr().contains(function (obj) {
+      var out = {
+        subjectDirectoryAttributes:   SubjectDirectoryAttributes,
+        subjectKeyIdentifier:         SubjectKeyIdentifier,
+        keyUsage:                     KeyUsage,
+        subjectAlternativeName:       SubjectAlternativeName,
+        issuerAlternativeName:        IssuerAlternativeName,
+        basicConstraints:             BasicConstraints,
+        cRLNumber:                    CRLNumber,
+        reasonCode:                   ReasonCode,
+        invalidityDate:               InvalidityDate,
+        deltaCRLIndicator:            DeltaCRLIndicator,
+        issuingDistributionPoint:     IssuingDistributionPoint,
+        certificateIssuer:            CertificateIssuer,
+        nameConstraints:              NameConstraints,
+        cRLDistributionPoints:        CRLDistributionPoints,
+        certificatePolicies:          CertificatePolicies,
+        policyMappings:               PolicyMappings,
+        authorityKeyIdentifier:       AuthorityKeyIdentifier,
+        policyConstraints:            PolicyConstraints,
+        extendedKeyUsage:             ExtendedKeyUsage,
+        freshestCRL:                  FreshestCRL,
+        inhibitAnyPolicy:             InhibitAnyPolicy,
+        authorityInformationAccess:   AuthorityInfoAccessSyntax,
+        subjectInformationAccess:     SubjectInformationAccess
+      }[obj.extnID]
+      return out ? out : asn1.define('OctString', function () { this.any() })
+    })
   );
 });
 rfc5280.Extension = Extension;
@@ -166,7 +220,7 @@ rfc5280.Extension = Extension;
 //      rdnSequence  RDNSequence }
 var Name = asn1.define('Name', function() {
   this.choice({
-    rdn: this.use(RDNSequence)
+    rdnSequence: this.use(RDNSequence)
   });
 });
 rfc5280.Name = Name;
@@ -286,87 +340,6 @@ var DirectoryString = asn1.define('DirectoryString', function() {
   });
 });
 rfc5280.DirectoryString = DirectoryString;
-
-
-/**
- * Extensions
- */
-
-rfc5280.extensions = {
-  standard: {
-    // Standard Extensions (id-ce)
-    prefix: [2, 5, 29],
-    35: 'Authority Key Identifier',
-    14: 'Subject Key Identifier',
-    15: {
-      name: 'Key Usage',
-      parse: function(decoded, cert, ext, edata) {
-        // For bitstr: KeyUsage
-        // NOTE: nonRepudiation was renamed to contentCommitment:
-        var data = decoded.data[0];
-        return {
-          digitalSignature: !!((data >> 0) & 1),
-          nonRepudiation: !!((data >> 1) & 1),
-          contentCommitment: !!((data >> 1) & 1),
-          keyEncipherment: !!((data >> 2) & 1),
-          dataEncipherment: !!((data >> 3) & 1),
-          keyAgreement: !!((data >> 4) & 1),
-          keyCertSign: !!((data >> 5) & 1),
-          cRLSign: !!((data >> 6) & 1),
-          encipherOnly: !!((data >> 7) & 1),
-          decipherOnly: !!((data >> 8) & 1)
-        };
-      },
-      execute: function(cert) {
-        return cert;
-      }
-    },
-    32: 'Certificate Policies',
-    33: 'Policy Mappings',
-    17: 'Subject Alternative Name',
-    18: 'Issuer Alternative Name',
-    9: 'Subject Directory Attributes',
-    19: 'Basic Constraints',
-    30: 'Name Constraints',
-    36: 'Policy Constraints',
-    37: 'Extended Key Usage',
-    31: {
-      name: 'CRL Distribution Points',
-      parse: function(decoded, cert, ext, edata) {
-        return decoded;
-      },
-      execute: function(cert) {
-        return cert;
-      }
-    },
-    54: 'Inhibit anyPolicy',
-    46: 'Freshest CRL'
-  },
-
-  // Private Internet Extensions (id-pe)
-  priv: {
-    prefix: [1, 3, 6, 1, 5, 5, 7],
-    1: 'Authority Information Access',
-    11: 'Subject Information Access',
-    // Unknown Extension (not documented anywhere, probably non-standard)
-    '1.1': 'Unknown Extension'
-  },
-
-  // CRL Extensions (id-ce)
-  crl: {
-    prefix: [2, 5, 29],
-    20: 'CRL Number',
-    27: 'Delta CRL Indicator',
-    28: 'Issuing Distribution Point',
-    21: 'Reason Code',
-    24: 'Invalidity Date',
-    29: 'Certificate Issuer'
-  }
-};
-
-/**
- * Standard Extensions
- */
 
 // AuthorityKeyIdentifier ::= SEQUENCE {
 //     keyIdentifier             [0] KeyIdentifier            OPTIONAL,
@@ -595,7 +568,7 @@ rfc5280.CertificatePolicies = CertificatePolicies;
 var PolicyInformation = asn1.define('PolicyInformation', function() {
   this.seq().obj(
     this.key('policyIdentifier').use(CertPolicyId),
-    this.key('policyQualifiers').use(PolicyQualifiers)
+    this.key('policyQualifiers').optional().use(PolicyQualifiers)
   );
 });
 rfc5280.PolicyInformation = PolicyInformation;
@@ -678,8 +651,8 @@ rfc5280.BasicConstraints = BasicConstraints;
 //            excludedSubtrees        [1]     GeneralSubtrees OPTIONAL }
 var NameConstraints = asn1.define('NameConstraints', function() {
   this.seq().obj(
-    this.key('permittedSubtrees').optiona().use(GeneralSubtrees),
-    this.key('excludedSubtrees').optional().use(GeneralSubtrees)
+    this.key('permittedSubtrees').implicit(0).optional().use(GeneralSubtrees),
+    this.key('excludedSubtrees').implicit(1).optional().use(GeneralSubtrees)
   );
 });
 rfc5280.NameConstraints = NameConstraints;
@@ -714,8 +687,8 @@ rfc5280.BaseDistance = BaseDistance;
 //         inhibitPolicyMapping            [1] SkipCerts OPTIONAL }
 var PolicyConstraints = asn1.define('PolicyConstraints', function() {
   this.seq().obj(
-    this.key('requireExplicitPolicy').optional().use(SkipCerts),
-    this.key('inhibitPolicyMapping').optional().use(SkipCerts)
+    this.key('requireExplicitPolicy').implicit(0).optional().use(SkipCerts),
+    this.key('inhibitPolicyMapping').implicit(1).optional().use(SkipCerts)
   );
 });
 rfc5280.PolicyConstraints = PolicyConstraints;
@@ -762,10 +735,8 @@ rfc5280.DistributionPoint = DistributionPoint;
 //         nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
 var DistributionPointName = asn1.define('DistributionPointName', function() {
   this.choice({
-    // XXX Workaround parser error:
-    _unknown: this.any(),
-    fullName: this.use(GeneralNames),
-    nameRelativeToCRLIssuer: this.use(RelativeDistinguishedName)
+    fullName: this.implicit(0).use(GeneralNames),
+    nameRelativeToCRLIssuer: this.implicit(1).use(RelativeDistinguishedName)
   });
 });
 rfc5280.DistributionPointName = DistributionPointName;
@@ -884,146 +855,3 @@ var CertificateIssuer = asn1.define('CertificateIssuer', function() {
   this.use(GeneralNames);
 });
 rfc5280.CertificateIssuer = CertificateIssuer;
-
-// Not in spec.
-// Just a catchall
-var UnknownExtension = asn1.define('UnknownExtension', function() {
-  this.any();
-});
-rfc5280.UnknownExtension = UnknownExtension;
-
-
-/**
- * Create Extension Decoders
- */
-
-Object.keys(rfc5280.extensions).forEach(function(typeName) {
-  var type = rfc5280.extensions[typeName];
-  Object.keys(type).forEach(function(suffix) {
-    var id, prop, schemaName, schema, parse, execute;
-
-    if (suffix === 'prefix')
-      return;
-
-    var prefix = type.prefix;
-    var name = type[suffix];
-
-    if (typeof name === 'object') {
-      var obj = name;
-      name = obj.name;
-      parse = obj.parse;
-      execute = obj.execute;
-    }
-
-    id = prefix.concat(suffix).join('.');
-
-    if (/^[A-Z]+ /.test(name)) {
-      // CRL Distribution Points - > CRLDistributionPoints
-      prop = name.replace(/ /g, '');
-    } else {
-      prop = (name[0].toLowerCase()) + name.substring(1).replace(/ /g, '');
-    }
-
-    schemaName = name.replace(/ /g, '');
-    schema = rfc5280[schemaName];
-
-    rfc5280.extensions[id] = {
-      typeName: typeName,
-      prefix: prefix,
-      suffix: suffix,
-      id: id,
-      name: name,
-      prop: prop,
-      schemaName: schemaName,
-      schema: schema,
-      parse: parse,
-      execute: execute
-    };
-  });
-});
-
-/**
- * Parse all TBSCertificate's extensions
- */
-
-rfc5280.decodeExtensions = function(cert, format, options) {
-  var tbsCertificate = cert.tbsCertificate;
-
-  if (format && typeof format === 'object') {
-    options = format;
-    format = null;
-  }
-
-  format = format || 'der';
-
-  if (!tbsCertificate) {
-    tbsCertificate = cert;
-    cert = null;
-  }
-
-  var edata, eid, ext, decoded, errors, data;
-
-  var output = {};
-  output.unknown = [];
-
-  for (var i = 0; i < tbsCertificate.extensions.length; i++) {
-    edata = tbsCertificate.extensions[i];
-    eid = edata.extnID.join('.');
-
-    if (ext = rfc5280.extensions[eid]) {
-      // Parse Extension
-      decoded = ext.schema.decode(edata.extnValue, format, options);
-
-      // partial: true throws everything onto: { result: ..., errors: ... }
-      if (options.partial && decoded.result) {
-        errors = decoded.errors;
-        if (Array.isArray(decoded.result)) {
-          decoded = decoded.result.map(function(decoded) {
-            decoded.errors.forEach(function(error) {
-              errors.push(error);
-            });
-            return decoded.result;
-          });
-        } else {
-          decoded = decoded.result;
-        }
-      }
-
-      // If the Extension needs extra parsing (i.e. bitstrs)
-      data = {
-        decoded: ext.parse
-          ? ext.parse(decoded, cert, ext, edata)
-          : decoded,
-          raw: edata.extnValue
-      };
-
-      // Tack on some useful info
-
-      // Comment for debugging:
-      // data.edata = edata;
-      // data.ext = ext;
-
-      // Execute Behavior for Cert
-      if (ext.execute) {
-        data.execute = ext.execute;
-      }
-
-      // Add errors for partial: true
-      if (options.partial && errors) {
-        data.errors = errors;
-      }
-
-      // Add our decoded extension to the output
-      output[ext.prop] = data;
-    } else {
-      // Add unknown extension:
-      output.unknown.push(edata);
-    }
-  }
-
-  output.verified = !output.unknown.filter(function(ext) {
-    return ext.critical;
-  }).length;
-
-  return output;
-};

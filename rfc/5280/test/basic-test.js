@@ -5,6 +5,7 @@ var rfc5280 = require('..');
 var Buffer = require('buffer').Buffer;
 
 describe('asn1.js RFC5280', function() {
+
   it('should decode Certificate', function() {
     var data = new Buffer(
       '308204763082035ea0030201020208462e4256bb1194dc300d06092a864886f70d0101' +
@@ -52,11 +53,10 @@ describe('asn1.js RFC5280', function() {
                  '1.2.840.113549.1.1.5');
     assert.equal(tbs.signature.parameters.toString('hex'), '0500');
   });
+
   it('should decode ECC Certificate', function() {
-/*
-  Symantec Class 3 ECC 256 bit Extended Validation CA from
-  https://knowledge.symantec.com/support/ssl-certificates-support/index?page=content&actp=CROSSLINK&id=AR1908
-*/
+    // Symantec Class 3 ECC 256 bit Extended Validation CA from
+    // https://knowledge.symantec.com/support/ssl-certificates-support/index?page=content&actp=CROSSLINK&id=AR1908
     var data = new Buffer(
       '308203e33082036aa00302010202104d955d20af85c49f6925fbab7c665f89300a0608' +
       '2a8648ce3d0403033081ca310b300906035504061302555331173015060355040a130e' +
@@ -88,7 +88,6 @@ describe('asn1.js RFC5280', function() {
       '76988fbf02304fc22fce92c5a9bdce7d4ed41b3b6624ea4ecd82af544a88efe3bf3a93' +
       '6354217d1230d232cdabc981b0a711437b4566',
       'hex');
-    var SubjectPublicKeyInfo = rfc5280.SubjectPublicKeyInfo;
     var res = rfc5280.Certificate.decode(data, 'der');
 
     var tbs = res.tbsCertificate;
@@ -97,7 +96,7 @@ describe('asn1.js RFC5280', function() {
                      new asn1.bignum('4d955d20af85c49f6925fbab7c665f89', 16));
     assert.equal(tbs.signature.algorithm.join('.'),
                  '1.2.840.10045.4.3.3');  // RFC5754
-    var spki = SubjectPublicKeyInfo.encode(tbs.subjectPublicKeyInfo, 'der');
+    var spki = rfc5280.SubjectPublicKeyInfo.encode(tbs.subjectPublicKeyInfo, 'der');
 // spki check to the output of
 // openssl x509 -in ecc_cert.pem -pubkey -noout |
 // openssl pkey -pubin  -outform der | openssl base64

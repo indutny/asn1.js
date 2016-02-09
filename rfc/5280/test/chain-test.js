@@ -1,6 +1,6 @@
 var assert = require('assert');
 var asn1 = require('../../../');
-var rfc3280 = require('../../3280');
+var rfc5280 = require('../../5280');
 var rfc5280 = require('..');
 
 var Buffer = require('buffer').Buffer;
@@ -8,7 +8,8 @@ var Buffer = require('buffer').Buffer;
 describe('asn1.js RFC5280', function() {
   it('should decode Certificate Extensions', function() {
     var chain = [];
-    var cert, extensions;
+    var cert;
+    var extensions = {}
 
     chain[0] = new Buffer(''
       + '3082052030820408a003020102020727a49d05046d62300d06092a864886f70d01010b'
@@ -159,20 +160,34 @@ describe('asn1.js RFC5280', function() {
       + 'b92a5a57ad370faf1d7fdbbd9f',
       'hex');
 
-    cert = rfc3280.Certificate.decode(chain[0], 'der');
-    extensions = rfc5280.decodeExtensions(cert, { partial: true });
-    assert.equal(extensions.basicConstraints.decoded.cA, false);
+    cert = rfc5280.Certificate.decode(chain[0], 'der');
+    cert.tbsCertificate.extensions.forEach(function (e) {
+      extensions[e.extnID] = e
+    });
+    assert.equal(extensions.basicConstraints.extnValue.cA, false);
+    assert.equal(extensions.extendedKeyUsage.extnValue.length, 2);
 
-    cert = rfc3280.Certificate.decode(chain[1], 'der');
-    extensions = rfc5280.decodeExtensions(cert, { partial: true });
-    assert.equal(extensions.basicConstraints.decoded.cA, true);
+    extensions = {}
+    cert = rfc5280.Certificate.decode(chain[1], 'der');
+    cert.tbsCertificate.extensions.forEach(function (e) {
+      extensions[e.extnID] = e
+    });
+    assert.equal(extensions.basicConstraints.extnValue.cA, true);
+    assert.equal(extensions.authorityInformationAccess.extnValue[0]
+                 .accessLocation.value, 'http://ocsp.godaddy.com/')
 
-    cert = rfc3280.Certificate.decode(chain[2], 'der');
-    extensions = rfc5280.decodeExtensions(cert, { partial: true });
-    assert.equal(extensions.basicConstraints.decoded.cA, true);
+    extensions = {}
+    cert = rfc5280.Certificate.decode(chain[2], 'der');
+    cert.tbsCertificate.extensions.forEach(function (e) {
+      extensions[e.extnID] = e
+    });
+    assert.equal(extensions.basicConstraints.extnValue.cA, true);
 
-    cert = rfc3280.Certificate.decode(chain[3], 'der');
-    extensions = rfc5280.decodeExtensions(cert, { partial: true });
-    assert.equal(extensions.basicConstraints.decoded.cA, true);
+    extensions = {}
+    cert = rfc5280.Certificate.decode(chain[3], 'der');
+    cert.tbsCertificate.extensions.forEach(function (e) {
+      extensions[e.extnID] = e
+    });
+    assert.equal(extensions.basicConstraints.extnValue.cA, true);
   });
 });

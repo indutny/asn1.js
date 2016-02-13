@@ -12,13 +12,13 @@
     "rfc3280",
     "der"
   ],
-  "author": "Fedor Indutny",
+  "author": "Felix Hanley",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/indutny/asn1.js/issues"
   },
   "homepage": "https://github.com/indutny/asn1.js",
-  "peerDependencies": {
-    "asn1.js": "~0.4.0"
+  "dependencies": {
+    "asn1.js": "^4.4.0"
   }
 }

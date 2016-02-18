@@ -120,4 +120,30 @@ describe('asn1.js DER decoder', function() {
   test('should decode ISO646 string', function() {
     this.iso646str();
   }, '1A0B7365707469632074616E6B', 'septic tank');
+
+  it('should decode optional seqof', function() {
+    var B = asn1.define('B', function() {
+      this.seq().obj(
+        this.key('num').int()
+      );
+    });
+    var A = asn1.define('A', function() {
+      this.seq().obj(
+        this.key('test1').seqof(B),
+        this.key('test2').optional().seqof(B)
+      );
+    });
+
+    var out = A.decode(new Buffer(
+      '3018300A30030201013003020102300A30030201033003020104', 'hex'), 'der');
+    assert.equal(out.test1[0].num.toString(10), 1);
+    assert.equal(out.test1[1].num.toString(10), 2);
+    assert.equal(out.test2[0].num.toString(10), 3);
+    assert.equal(out.test2[1].num.toString(10), 4);
+
+    out = A.decode(new Buffer('300C300A30030201013003020102', 'hex'), 'der');
+    assert.equal(out.test1[0].num.toString(10), 1);
+    assert.equal(out.test1[1].num.toString(10), 2);
+    assert.equal(out.test2, undefined);
+  });
 });

@@ -9,7 +9,7 @@
   },
   "keywords": [
     "asn1",
-    "rfc3280",
+    "rfc5280",
     "der"
   ],
   "author": "Felix Hanley",

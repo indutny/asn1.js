@@ -1,6 +1,6 @@
 {
   "name": "asn1.js-rfc5280",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "RFC5280 extension structures for asn1.js",
   "main": "index.js",
   "repository": {
@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/indutny/asn1.js",
   "dependencies": {
-    "asn1.js": "^4.4.0"
+    "asn1.js": "^4.5.0"
   }
 }

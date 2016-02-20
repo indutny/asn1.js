@@ -104,4 +104,20 @@ describe('asn1.js DER decoder', function() {
     var out = A.decode(new Buffer('04053003020105', 'hex'), 'der');
     assert.equal(out.nested.toString(10), '5');
   });
+
+  test('should decode IA5 string', function() {
+    this.ia5str();
+  }, '160C646F6720616E6420626F6E65', 'dog and bone');
+
+  test('should decode printable string', function() {
+    this.printstr();
+  }, '1310427261686D7320616E64204C69737A74', 'Brahms and Liszt');
+
+  test('should decode T61 string', function() {
+    this.t61str();
+  }, '140C4F6C69766572205477697374', 'Oliver Twist');
+
+  test('should decode ISO646 string', function() {
+    this.iso646str();
+  }, '1A0B7365707469632074616E6B', 'septic tank');
 });

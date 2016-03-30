@@ -661,7 +661,7 @@ rfc5280.GeneralSubtrees = GeneralSubtrees;
 var GeneralSubtree = asn1.define('GeneralSubtree', function() {
   this.seq().obj(
     this.key('base').use(GeneralName),
-    this.key('minimum').default(0).use(BaseDistance),
+    this.key('minimum').def(0).use(BaseDistance),
     this.key('maximum').optional().use(BaseDistance)
   );
 });

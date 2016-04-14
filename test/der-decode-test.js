@@ -160,9 +160,9 @@ describe('asn1.js DER decoder', function() {
 
   it('should decode components of indefinite length octet string', function() {
     var A = asn1.define('A', function() {
-      this.key('test').implicit(0).octstr()
+      this.implicit(0).octstr()
     })
     var out = A.decode(new Buffer('A0800401050401060401070000', 'hex'), 'der');
-    // assert.equal(out.test.toString(10), '050607')
+    assert.deepEqual(out, new Buffer('050607', 'hex'))
   });
 });

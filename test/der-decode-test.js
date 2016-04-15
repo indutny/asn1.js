@@ -174,7 +174,6 @@ describe('asn1.js DER decoder', function() {
       )
     })
     var out = A.decode(new Buffer('3080020100A08004010504010604010700000000', 'hex'), 'der');
-    console.log('decoded', out)
     assert.deepEqual(out.oct, new Buffer('050607', 'hex'))
   });
 });

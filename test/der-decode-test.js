@@ -169,11 +169,14 @@ describe('asn1.js DER decoder', function() {
   it('should decode components of longer indefinite length structure', function() {
     var A = asn1.define('A', function() {
       this.key('seq').seq().obj(
-        this.key('int').int(),
-        this.key('oct').implicit(0).octstr()
+        this.key('int1').int(),
+        this.key('oct').implicit(0).octstr(),
+        this.key('int2').int()
       )
     })
-    var out = A.decode(new Buffer('3080020100A08004010504010604010700000000', 'hex'), 'der');
+    var out = A.decode(new Buffer('3080020104A08004010504010604010700000201050000', 'hex'), 'der');
+    assert.equal(out.int1.toString(), '4')
     assert.deepEqual(out.oct, new Buffer('050607', 'hex'))
+    assert.equal(out.int2.toString(), '5')
   });
 });

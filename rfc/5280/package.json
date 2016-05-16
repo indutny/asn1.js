@@ -1,6 +1,6 @@
 {
   "name": "asn1.js-rfc5280",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RFC5280 extension structures for asn1.js",
   "main": "index.js",
   "repository": {

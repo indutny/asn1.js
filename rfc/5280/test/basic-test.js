@@ -102,4 +102,31 @@ describe('asn1.js RFC5280', function() {
     });
     assert.equal(extensions.basicConstraints.extnValue.cA, true);
   });
+
+  it('should encode/decode IssuingDistributionPoint', function() {
+    var input = {
+      onlyContainsUserCerts: true,
+      onlyContainsCACerts: false,
+      indirectCRL: true,
+      onlyContainsAttributeCerts: false
+    };
+
+    var data = rfc5280.IssuingDistributionPoint.encode(input);
+
+    var decoded = rfc5280.IssuingDistributionPoint.decode(data);
+    assert.deepEqual(decoded, input);
+
+    var input = {
+      onlyContainsUserCerts: true,
+      onlyContainsCACerts: false,
+      indirectCRL: true,
+      onlyContainsAttributeCerts: false,
+      onlySomeReasons: { unused: 0, data: new Buffer('asdf') }
+    };
+
+    var data = rfc5280.IssuingDistributionPoint.encode(input);
+
+    var decoded = rfc5280.IssuingDistributionPoint.decode(data);
+    assert.deepEqual(decoded, input);
+  });
 });

@@ -811,12 +811,13 @@ rfc5280.DeltaCRLIndicator = DeltaCRLIndicator;
 var IssuingDistributionPoint = asn1.define('IssuingDistributionPoint',
                                            function() {
   this.seq().obj(
-    this.key('distributionPoint').use(DistributionPointName),
-    this.key('onlyContainsUserCerts').def(false).bool(),
-    this.key('onlyContainsCACerts').def(false).bool(),
-    this.key('onlySomeReasons').use(ReasonFlags),
-    this.key('indirectCRL').def(false).bool(),
-    this.key('onlyContainsAttributeCerts').def(false).bool()
+    this.key('distributionPoint').implicit(0).optional()
+        .use(DistributionPointName),
+    this.key('onlyContainsUserCerts').implicit(1).def(false).bool(),
+    this.key('onlyContainsCACerts').implicit(2).def(false).bool(),
+    this.key('onlySomeReasons').implicit(3).optional().use(ReasonFlags),
+    this.key('indirectCRL').implicit(4).def(false).bool(),
+    this.key('onlyContainsAttributeCerts').implicit(5).def(false).bool()
   );
 });
 rfc5280.IssuingDistributionPoint = IssuingDistributionPoint;

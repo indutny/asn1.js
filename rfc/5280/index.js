@@ -580,7 +580,7 @@ rfc5280.PolicyQualifiers = PolicyQualifiers;
 var PolicyQualifierInfo = asn1.define('PolicyQualifierInfo', function() {
   this.seq().obj(
     this.key('policyQualifierId').use(PolicyQualifierId),
-    this.key('qualifier').any().use(PolicyQualifierId)
+    this.key('qualifier').any()
   );
 });
 rfc5280.PolicyQualifierInfo = PolicyQualifierInfo;

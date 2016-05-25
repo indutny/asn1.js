@@ -94,8 +94,8 @@ var TBSCertificate = asn1.define('TBSCertificate', function() {
     this.key('validity').use(Validity),
     this.key('subject').use(Name),
     this.key('subjectPublicKeyInfo').use(SubjectPublicKeyInfo),
-    this.key('issuerUniqueID').optional().explicit(1).bitstr(),
-    this.key('subjectUniqueID').optional().explicit(2).bitstr(),
+    this.key('issuerUniqueID').optional().implicit(1).bitstr(),
+    this.key('subjectUniqueID').optional().implicit(2).bitstr(),
     this.key('extensions').optional().explicit(3).seqof(Extension)
   );
 });
@@ -170,7 +170,7 @@ var TBSCertList = asn1.define('TBSCertList', function() {
         this.key('crlEntryExtensions').optional().seqof(Extension)
       )
     ),
-    this.key('crlExtensions').implicit(0).optional().seqof(Extension)
+    this.key('crlExtensions').explicit(0).optional().seqof(Extension)
   );
 });
 rfc5280.TBSCertList = TBSCertList;
@@ -324,9 +324,9 @@ rfc5280.DirectoryString = DirectoryString;
 //     authorityCertSerialNumber [2] CertificateSerialNumber  OPTIONAL }
 var AuthorityKeyIdentifier = asn1.define('AuthorityKeyIdentifier', function() {
   this.seq().obj(
-    this.key('keyIdentifier').optional().use(KeyIdentifier),
-    this.key('authorityCertIssuer').optional().use(GeneralNames),
-    this.key('authorityCertSerialNumber').optional()
+    this.key('keyIdentifier').implicit(0).optional().use(KeyIdentifier),
+    this.key('authorityCertIssuer').implicit(1).optional().use(GeneralNames),
+    this.key('authorityCertSerialNumber').implicit(2).optional()
     .use(CertificateSerialNumber)
   );
 });
@@ -376,13 +376,16 @@ var BuiltInStandardAttributes = asn1.define('BuiltInStandardAttributes',
     this.key('countryName').optional().use(CountryName),
     this.key('administrationDomainName').optional()
     .use(AdministrationDomainName),
-    this.key('networkAddress').optional().use(NetworkAddress),
-    this.key('terminalIdentifier').optional().use(TerminalIdentifier),
-    this.key('privateDomainName').optional().use(PrivateDomainName),
-    this.key('organizationName').optional().use(OrganizationName),
-    this.key('numericUserIdentifier').optional().use(NumericUserIdentifier),
-    this.key('personalName').optional().use(PersonalName),
-    this.key('organizationalUnitNames').optional().use(OrganizationalUnitNames)
+    this.key('networkAddress').implicit(0).optional().use(NetworkAddress),
+    this.key('terminalIdentifier').implicit(1).optional()
+        .use(TerminalIdentifier),
+    this.key('privateDomainName').explicit(2).optional().use(PrivateDomainName),
+    this.key('organizationName').implicit(3).optional().use(OrganizationName),
+    this.key('numericUserIdentifier').implicit(4).optional()
+        .use(NumericUserIdentifier),
+    this.key('personalName').implicit(5).optional().use(PersonalName),
+    this.key('organizationalUnitNames').implicit(6).optional()
+        .use(OrganizationalUnitNames)
   );
 });
 rfc5280.BuiltInStandardAttributes = BuiltInStandardAttributes;
@@ -459,10 +462,10 @@ rfc5280.NumericUserIdentifier = NumericUserIdentifier;
 //    generation-qualifier [3] IMPLICIT PrintableString OPTIONAL }
 var PersonalName = asn1.define('PersonalName', function() {
   this.set().obj(
-    this.key('surname').implicit().printstr(),
-    this.key('givenName').implicit().printstr(),
-    this.key('initials').implicit().printstr(),
-    this.key('generationQualifier').implicit().printstr()
+    this.key('surname').implicit(0).printstr(),
+    this.key('givenName').implicit(1).printstr(),
+    this.key('initials').implicit(2).printstr(),
+    this.key('generationQualifier').implicit(3).printstr()
   );
 });
 rfc5280.PersonalName = PersonalName;
@@ -517,8 +520,8 @@ rfc5280.ExtensionAttributes = ExtensionAttributes;
 //    extension-attribute-value [1] ANY DEFINED BY extension-attribute-type }
 var ExtensionAttribute = asn1.define('ExtensionAttribute', function() {
   this.seq().obj(
-    this.key('extensionAttributeType').implicit().int(),
-    this.key('extensionAttributeValue').any().implicit().int()
+    this.key('extensionAttributeType').implicit(0).int(),
+    this.key('extensionAttributeValue').any().explicit(1).int()
   );
 });
 rfc5280.ExtensionAttribute = ExtensionAttribute;
@@ -661,8 +664,8 @@ rfc5280.GeneralSubtrees = GeneralSubtrees;
 var GeneralSubtree = asn1.define('GeneralSubtree', function() {
   this.seq().obj(
     this.key('base').use(GeneralName),
-    this.key('minimum').def(0).use(BaseDistance),
-    this.key('maximum').optional().use(BaseDistance)
+    this.key('minimum').implicit(0).def(0).use(BaseDistance),
+    this.key('maximum').implicit(0).optional().use(BaseDistance)
   );
 });
 rfc5280.GeneralSubtree = GeneralSubtree;
@@ -714,9 +717,10 @@ rfc5280.CRLDistributionPoints = CRLDistributionPoints;
 //         cRLIssuer               [2]     GeneralNames OPTIONAL }
 var DistributionPoint = asn1.define('DistributionPoint', function() {
   this.seq().obj(
-    this.key('distributionPoint').optional().use(DistributionPointName),
-    this.key('reasons').optional().use(ReasonFlags),
-    this.key('cRLIssuer').optional().use(GeneralNames)
+    this.key('distributionPoint').optional().explicit(0)
+        .use(DistributionPointName),
+    this.key('reasons').optional().implicit(1).use(ReasonFlags),
+    this.key('cRLIssuer').optional().implicit(2).use(GeneralNames)
   );
 });
 rfc5280.DistributionPoint = DistributionPoint;
@@ -811,7 +815,7 @@ rfc5280.DeltaCRLIndicator = DeltaCRLIndicator;
 var IssuingDistributionPoint = asn1.define('IssuingDistributionPoint',
                                            function() {
   this.seq().obj(
-    this.key('distributionPoint').implicit(0).optional()
+    this.key('distributionPoint').explicit(0).optional()
         .use(DistributionPointName),
     this.key('onlyContainsUserCerts').implicit(1).def(false).bool(),
     this.key('onlyContainsCACerts').implicit(2).def(false).bool(),

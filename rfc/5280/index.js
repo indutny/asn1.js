@@ -881,3 +881,4 @@ var x509Extensions = {
   authorityInformationAccess: AuthorityInfoAccessSyntax,
   subjectInformationAccess: SubjectInformationAccess
 };
+rfc5280.x509Extensions = x509Extensions;

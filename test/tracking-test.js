@@ -24,24 +24,31 @@ describe('asn1.js tracking', function() {
       b: { x: 3, y: 4 }
     };
 
-    var tracked = {};
+    var tracked = [];
 
     var encoded = A.encode(input, 'der');
     var decoded = A.decode(encoded, 'der', {
-      track: function(path, start, end) {
-        tracked[path] = [ start, end ];
+      track: function(path, start, end, type) {
+        tracked.push([ type, path, start, end ]);
       }
     });
 
     jsonEqual(input, decoded);
-    assert.deepEqual(tracked, {
-      '': [ 0, 20 ],
-      a: [ 4, 12 ],
-      'a/x': [ 6, 8 ],
-      'a/y': [ 9, 11 ],
-       b: [ 12, 20 ],
-      'b/x': [ 14, 16 ],
-      'b/y': [ 17, 19 ]
-    });
+    assert.deepEqual(tracked, [
+      [ "tagged", "", 0, 20 ],
+      [ "content", "", 2, 20 ],
+      [ "tagged", "a", 4, 12 ],
+      [ "content", "a", 6, 12 ],
+      [ "tagged", "a/x", 6, 9 ],
+      [ "content", "a/x", 8, 9 ],
+      [ "tagged", "a/y", 9, 12 ],
+      [ "content", "a/y", 11, 12 ],
+      [ "tagged", "b", 12, 20 ],
+      [ "content", "b", 14, 20 ],
+      [ "tagged", "b/x", 14, 17 ],
+      [ "content", "b/x", 16, 17 ],
+      [ "tagged", "b/y", 17, 20 ],
+      [ "content", "b/y", 19, 20 ]
+    ]);
   });
 });

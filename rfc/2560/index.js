@@ -19,7 +19,8 @@ var TBSRequest = asn1.define('TBSRequest', function() {
     this.key('version').def('v1').explicit(0).use(rfc5280.Version),
     this.key('requestorName').optional().explicit(1).use(rfc5280.GeneralName),
     this.key('requestList').seqof(Request),
-    this.key('requestExtensions').optional().explicit(2).use(rfc5280.Extensions)
+    this.key('requestExtensions').optional().explicit(2)
+        .seqof(rfc5280.Extension)
   );
 });
 exports.TBSRequest = TBSRequest;
@@ -36,8 +37,8 @@ exports.Signature = Signature;
 var Request = asn1.define('Request', function() {
   this.seq().obj(
     this.key('reqCert').use(CertID),
-    this.key('singleRequestExtensions').optional().explicit(0).use(
-      rfc5280.Extensions)
+    this.key('singleRequestExtensions').optional().explicit(0).seqof(
+        rfc5280.Extension)
   );
 });
 exports.Request = Request;
@@ -84,7 +85,7 @@ var ResponseData = asn1.define('ResponseData', function() {
     this.key('producedAt').gentime(),
     this.key('responses').seqof(SingleResponse),
     this.key('responseExtensions').optional().explicit(0)
-        .use(rfc5280.Extensions)
+        .seqof(rfc5280.Extension)
   );
 });
 exports.ResponseData = ResponseData;
@@ -108,7 +109,7 @@ var SingleResponse = asn1.define('SingleResponse', function() {
     this.key('certStatus').use(CertStatus),
     this.key('thisUpdate').gentime(),
     this.key('nextUpdate').optional().explicit(0).gentime(),
-    this.key('singleExtensions').optional().explicit(1).use(rfc5280.Extensions)
+    this.key('singleExtensions').optional().explicit(1).seqof(rfc5280.Extension)
   );
 });
 exports.SingleResponse = SingleResponse;

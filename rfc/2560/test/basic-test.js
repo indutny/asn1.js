@@ -47,4 +47,33 @@ describe('asn1.js RFC2560', function() {
     assert.equal(decoded.responseBytes.responseType, 'id-pkix-ocsp-basic');
     assert.equal(decoded.responseBytes.response.toString(), 'random-string');
   });
+
+  it('should encode OCSP request', function() {
+    var tbsReq = {
+      version: 'v1',
+      requestList: [
+        {
+          reqCert: {
+            hashAlgorithm: { algorithm: [ 1, 3, 14, 3, 2, 26 ] },
+            issuerNameHash: new Buffer('01', 'hex'),
+            issuerKeyHash: new Buffer('02', 'hex'),
+            serialNumber: 0x2b
+          }
+        }
+      ],
+      requestExtensions: [
+        {
+          extnID: [ 1, 3, 6, 1, 5, 5, 7, 48, 1, 2 ],
+          critical: false,
+          extnValue: new Buffer('03', 'hex')
+        }
+      ]
+    };
+
+    var res = {
+      tbsRequest: tbsReq
+    };
+
+    rfc2560.OCSPRequest.encode(res, 'der');
+  });
 });

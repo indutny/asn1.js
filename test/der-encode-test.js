@@ -30,6 +30,10 @@ describe('asn1.js DER encoder', function() {
     });
   }
 
+  test('should encode objDesc', function() {
+    this.objDesc();
+  }, new Buffer('280'), '0703323830');
+
   test('should encode choice', function() {
     this.choice({
       apple: this.bool(),

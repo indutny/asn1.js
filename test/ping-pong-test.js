@@ -29,6 +29,10 @@ describe('asn1.js ping/pong', function() {
       this.octstr();
     }, new Buffer('hello'));
 
+    test('objDesc', function() {
+      this.objDesc()
+    }, new Buffer('hello'));
+
     test('bitstr', function() {
       this.bitstr();
     }, { unused: 4, data: new Buffer('hello!') });

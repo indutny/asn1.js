@@ -76,6 +76,10 @@ describe('asn1.js DER decoder', function() {
     );
   }, '30800101ff0000', { 'key': true });
 
+  test('should decode objDesc', function() {
+    this.objDesc();
+  }, '0703323830', new Buffer('280'));
+
   test('should decode bmpstr', function() {
     this.bmpstr();
   }, '1e26004300650072007400690066006900630061' +

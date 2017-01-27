@@ -48,7 +48,7 @@ var CertificateList = asn1.define('CertificateList', function() {
     this.key('signature').bitstr()
   );
 });
-rfc5280.CerficateList = CertificateList;
+rfc5280.CertificateList = CertificateList;
 
 // AlgorithmIdentifier  ::=  SEQUENCE  {
 //      algorithm               OBJECT IDENTIFIER,

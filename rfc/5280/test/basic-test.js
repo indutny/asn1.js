@@ -129,4 +129,25 @@ describe('asn1.js RFC5280', function() {
     var decoded = rfc5280.IssuingDistributionPoint.decode(data);
     assert.deepEqual(decoded, input);
   });
+
+  it('should decode Revoked Certificates', function() {
+    var data;
+    var crl;
+
+    // Downloadable CRL (containing two certificates) from distribution point available on cert1.crt
+    data = fs.readFileSync(__dirname + '/fixtures/cert1.crl');
+    
+    crl = rfc5280.CertificateList.decode(data, 'der');
+    assert.equal(crl.tbsCertList.revokedCertificates.length, 2)
+    assert.deepEqual(crl.tbsCertList.revokedCertificates[0].userCertificate, 
+                     new asn1.bignum('764bedd38afd51f7', 16));
+    assert.deepEqual(crl.tbsCertList.revokedCertificates[1].userCertificate, 
+                     new asn1.bignum('31da3380182af9b2', 16));
+  
+    // Downloadable CRL (empty) from distribution point available on cert4.crt
+    data = fs.readFileSync(__dirname + '/fixtures/cert4.crl');
+    
+    crl = rfc5280.CertificateList.decode(data, 'der');
+    assert.equal(crl.tbsCertList.revokedCertificates, undefined);
+  });
 });

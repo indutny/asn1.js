@@ -48,7 +48,7 @@ var CertificateList = asn1.define('CertificateList', function() {
     this.key('signature').bitstr()
   );
 });
-rfc5280.CerficateList = CertificateList;
+rfc5280.CertificateList = CertificateList;
 
 // AlgorithmIdentifier  ::=  SEQUENCE  {
 //      algorithm               OBJECT IDENTIFIER,
@@ -163,17 +163,19 @@ var TBSCertList = asn1.define('TBSCertList', function() {
     this.key('issuer').use(Name),
     this.key('thisUpdate').use(Time),
     this.key('nextUpdate').use(Time),
-    this.key('revokedCertificates').optional().seq().obj(
-      this.seq().obj(
-        this.key('userCertificate').int(),
-        this.key('revocationDate').use(Time),
-        this.key('crlEntryExtensions').optional().seqof(Extension)
-      )
-    ),
+    this.key('revokedCertificates').optional().seqof(RevokedCertificate),
     this.key('crlExtensions').explicit(0).optional().seqof(Extension)
   );
 });
 rfc5280.TBSCertList = TBSCertList;
+
+var RevokedCertificate = asn1.define('RevokedCertificate', function() {
+  this.seq().obj(
+    this.key('userCertificate').use(CertificateSerialNumber),
+    this.key('revocationDate').use(Time),
+    this.key('crlEntryExtensions').optional().seqof(Extension)
+  )
+});
 
 // Extension  ::=  SEQUENCE  {
 //      extnID      OBJECT IDENTIFIER,

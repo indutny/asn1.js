@@ -841,7 +841,18 @@ rfc5280.IssuingDistributionPoint = IssuingDistributionPoint;
 //         privilegeWithdrawn      (9),
 //         aACompromise           (10) }
 var ReasonCode = asn1.define('ReasonCode', function() {
-  this.enum();
+  this.enum({
+    0: 'unspecified',
+    1: 'keyCompromise',
+    2: 'cACompromise',
+    3: 'affiliationChanged',
+    4: 'superseded',
+    5: 'cessationOfOperation',
+    6: 'certificateHold',
+    8: 'removeFromCRL',
+    9: 'privilegeWithdrawn',
+    10: 'aACompromise'
+  });
 });
 rfc5280.ReasonCode = ReasonCode;
 

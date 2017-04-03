@@ -141,8 +141,15 @@ describe('asn1.js RFC5280', function() {
     assert.equal(crl.tbsCertList.revokedCertificates.length, 2)
     assert.deepEqual(crl.tbsCertList.revokedCertificates[0].userCertificate,
                      new asn1.bignum('764bedd38afd51f7', 16));
-    assert.deepEqual(crl.tbsCertList.revokedCertificates[1].userCertificate,
+
+    var cert1 = crl.tbsCertList.revokedCertificates[1];
+    assert.deepEqual(cert1.userCertificate,
                      new asn1.bignum('31da3380182af9b2', 16));
+    assert.equal(cert1.crlEntryExtensions.length, 1);
+
+    var ext1 = cert1.crlEntryExtensions[0];
+    assert.equal(ext1.extnID, 'reasonCode');
+    assert.equal(ext1.extnValue, 'affiliationChanged');
 
     // Downloadable CRL (empty) from distribution point available on cert4.crt
     data = fs.readFileSync(__dirname + '/fixtures/cert4.crl');

@@ -126,7 +126,7 @@ exports.CertStatus = CertStatus;
 var RevokedInfo = asn1.define('RevokedInfo', function() {
   this.seq().obj(
     this.key('revocationTime').gentime(),
-    this.key('revocationReason').optional().explicit(0).use(rfc5280.CRLReason)
+    this.key('revocationReason').optional().explicit(0).use(rfc5280.ReasonCode)
   );
 });
 exports.RevokedInfo = RevokedInfo;

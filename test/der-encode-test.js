@@ -69,6 +69,18 @@ describe('asn1.js DER encoder', function() {
     this.int();
   }, 0x8011, '0203008011');
 
+  test('should encode int -1 properly', function() {
+    this.int();
+  }, -1, '0201FF');
+  
+  test('should encode int -128 properly', function() {
+    this.int();
+  }, -128, '020180');
+
+  test('should encode int -129 properly', function() {
+    this.int();
+  }, -129, '0202FF7F');
+  
   test('should omit default value in DER', function() {
     this.seq().obj(
       this.key('required').def(false).bool(),

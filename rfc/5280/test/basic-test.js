@@ -1,20 +1,20 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var fs = require('fs');
-var asn1 = require('../../../');
-var rfc5280 = require('..');
+const assert = require('assert');
+const fs = require('fs');
+const asn1 = require('../../../');
+const rfc5280 = require('..');
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js RFC5280', function() {
 
   it('should decode Certificate', function() {
-    var data = fs.readFileSync(__dirname + '/fixtures/cert1.crt');
-    var res = rfc5280.Certificate.decode(data, 'der');
+    const data = fs.readFileSync(__dirname + '/fixtures/cert1.crt');
+    const res = rfc5280.Certificate.decode(data, 'der');
 
-    var tbs = res.tbsCertificate;
+    const tbs = res.tbsCertificate;
     assert.equal(tbs.version, 'v3');
     assert.deepEqual(tbs.serialNumber,
       new asn1.bignum('462e4256bb1194dc', 16));
@@ -26,16 +26,16 @@ describe('asn1.js RFC5280', function() {
   it('should decode ECC Certificate', function() {
     // Symantec Class 3 ECC 256 bit Extended Validation CA from
     // https://knowledge.symantec.com/support/ssl-certificates-support/index?page=content&actp=CROSSLINK&id=AR1908
-    var data = fs.readFileSync(__dirname + '/fixtures/cert2.crt');
-    var res = rfc5280.Certificate.decode(data, 'der');
+    const data = fs.readFileSync(__dirname + '/fixtures/cert2.crt');
+    const res = rfc5280.Certificate.decode(data, 'der');
 
-    var tbs = res.tbsCertificate;
+    const tbs = res.tbsCertificate;
     assert.equal(tbs.version, 'v3');
     assert.deepEqual(tbs.serialNumber,
       new asn1.bignum('4d955d20af85c49f6925fbab7c665f89', 16));
     assert.equal(tbs.signature.algorithm.join('.'),
       '1.2.840.10045.4.3.3');  // RFC5754
-    var spki = rfc5280.SubjectPublicKeyInfo.encode(tbs.subjectPublicKeyInfo,
+    const spki = rfc5280.SubjectPublicKeyInfo.encode(tbs.subjectPublicKeyInfo,
       'der');
     // spki check to the output of
     // openssl x509 -in ecc_cert.pem -pubkey -noout |
@@ -48,29 +48,29 @@ describe('asn1.js RFC5280', function() {
   });
 
   it('should decode AuthorityInfoAccess', function() {
-    var data = new Buffer('305a302b06082b06010505073002861f687474703a2f2f70' +
+    const data = new Buffer('305a302b06082b06010505073002861f687474703a2f2f70' +
                           '6b692e676f6f676c652e636f6d2f47494147322e63727430' +
                           '2b06082b06010505073001861f687474703a2f2f636c6965' +
                           '6e7473312e676f6f676c652e636f6d2f6f637370',
     'hex');
 
-    var info = rfc5280.AuthorityInfoAccessSyntax.decode(data, 'der');
+    const info = rfc5280.AuthorityInfoAccessSyntax.decode(data, 'der');
 
     assert(info[0].accessMethod);
   });
 
   it('should decode directoryName in GeneralName', function() {
-    var data = new Buffer('a411300f310d300b06022a03160568656c6c6f', 'hex');
+    const data = new Buffer('a411300f310d300b06022a03160568656c6c6f', 'hex');
 
-    var name = rfc5280.GeneralName.decode(data, 'der');
+    const name = rfc5280.GeneralName.decode(data, 'der');
     assert.equal(name.type, 'directoryName');
   });
 
   it('should decode Certificate Extensions', function() {
-    var data;
-    var cert;
+    let data;
+    let cert;
 
-    var extensions = {};
+    let extensions = {};
     data = fs.readFileSync(__dirname + '/fixtures/cert3.crt');
     cert = rfc5280.Certificate.decode(data, 'der');
     cert.tbsCertificate.extensions.forEach(function(e) {
@@ -107,16 +107,16 @@ describe('asn1.js RFC5280', function() {
   });
 
   it('should encode/decode IssuingDistributionPoint', function() {
-    var input = {
+    let input = {
       onlyContainsUserCerts: true,
       onlyContainsCACerts: false,
       indirectCRL: true,
       onlyContainsAttributeCerts: false
     };
 
-    var data = rfc5280.IssuingDistributionPoint.encode(input);
+    let data = rfc5280.IssuingDistributionPoint.encode(input);
 
-    var decoded = rfc5280.IssuingDistributionPoint.decode(data);
+    let decoded = rfc5280.IssuingDistributionPoint.decode(data);
     assert.deepEqual(decoded, input);
 
     input = {
@@ -134,8 +134,8 @@ describe('asn1.js RFC5280', function() {
   });
 
   it('should decode Revoked Certificates', function() {
-    var data;
-    var crl;
+    let data;
+    let crl;
 
     // Downloadable CRL (containing two certificates) from distribution point available on cert1.crt
     data = fs.readFileSync(__dirname + '/fixtures/cert1.crl');
@@ -145,12 +145,12 @@ describe('asn1.js RFC5280', function() {
     assert.deepEqual(crl.tbsCertList.revokedCertificates[0].userCertificate,
       new asn1.bignum('764bedd38afd51f7', 16));
 
-    var cert1 = crl.tbsCertList.revokedCertificates[1];
+    const cert1 = crl.tbsCertList.revokedCertificates[1];
     assert.deepEqual(cert1.userCertificate,
       new asn1.bignum('31da3380182af9b2', 16));
     assert.equal(cert1.crlEntryExtensions.length, 1);
 
-    var ext1 = cert1.crlEntryExtensions[0];
+    const ext1 = cert1.crlEntryExtensions[0];
     assert.equal(ext1.extnID, 'reasonCode');
     assert.equal(ext1.extnValue, 'affiliationChanged');
 

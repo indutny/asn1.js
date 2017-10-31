@@ -1,14 +1,14 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var rfc2560 = require('..');
+const assert = require('assert');
+const rfc2560 = require('..');
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js RFC2560', function() {
   it('should decode OCSP response', function() {
-    var data = new Buffer(
+    const data = new Buffer(
       '308201d40a0100a08201cd308201c906092b0601050507300101048201ba308201b630' +
       '819fa216041499e4405f6b145e3e05d9ddd36354fc62b8f700ac180f32303133313133' +
       '303037343531305a30743072304a300906052b0e03021a050004140226ee2f5fa28108' +
@@ -25,11 +25,11 @@ describe('asn1.js RFC2560', function() {
       '2721ff38c709f3ec580d22ff40818dd17f',
       'hex');
 
-    var res = rfc2560.OCSPResponse.decode(data, 'der');
+    const res = rfc2560.OCSPResponse.decode(data, 'der');
     assert.equal(res.responseStatus, 'successful');
     assert.equal(res.responseBytes.responseType, 'id-pkix-ocsp-basic');
 
-    var basic = rfc2560.BasicOCSPResponse.decode(
+    const basic = rfc2560.BasicOCSPResponse.decode(
       res.responseBytes.response,
       'der'
     );
@@ -38,21 +38,21 @@ describe('asn1.js RFC2560', function() {
   });
 
   it('should encode/decode OCSP response', function() {
-    var encoded = rfc2560.OCSPResponse.encode({
+    const encoded = rfc2560.OCSPResponse.encode({
       responseStatus: 'malformed_request',
       responseBytes: {
         responseType: 'id-pkix-ocsp-basic',
         response: 'random-string'
       }
     }, 'der');
-    var decoded = rfc2560.OCSPResponse.decode(encoded, 'der');
+    const decoded = rfc2560.OCSPResponse.decode(encoded, 'der');
     assert.equal(decoded.responseStatus, 'malformed_request');
     assert.equal(decoded.responseBytes.responseType, 'id-pkix-ocsp-basic');
     assert.equal(decoded.responseBytes.response.toString(), 'random-string');
   });
 
   it('should encode OCSP request', function() {
-    var tbsReq = {
+    const tbsReq = {
       version: 'v1',
       requestList: [
         {
@@ -73,7 +73,7 @@ describe('asn1.js RFC2560', function() {
       ]
     };
 
-    var res = {
+    const res = {
       tbsRequest: tbsReq
     };
 

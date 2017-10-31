@@ -1,7 +1,9 @@
-var asn1 = require('asn1.js');
-var rfc5280 = require('asn1.js-rfc5280');
+'use strict';
 
-var OCSPRequest = asn1.define('OCSPRequest', function() {
+const asn1 = require('asn1.js');
+const rfc5280 = require('asn1.js-rfc5280');
+
+const OCSPRequest = asn1.define('OCSPRequest', function() {
   this.seq().obj(
     this.key('tbsRequest').use(TBSRequest),
     this.key('optionalSignature').optional().explicit(0).use(Signature)
@@ -9,7 +11,7 @@ var OCSPRequest = asn1.define('OCSPRequest', function() {
 });
 exports.OCSPRequest = OCSPRequest;
 
-var TBSRequest = asn1.define('TBSRequest', function() {
+const TBSRequest = asn1.define('TBSRequest', function() {
   this.seq().obj(
     this.key('version').def('v1').explicit(0).use(rfc5280.Version),
     this.key('requestorName').optional().explicit(1).use(rfc5280.GeneralName),
@@ -20,7 +22,7 @@ var TBSRequest = asn1.define('TBSRequest', function() {
 });
 exports.TBSRequest = TBSRequest;
 
-var Signature = asn1.define('Signature', function() {
+const Signature = asn1.define('Signature', function() {
   this.seq().obj(
     this.key('signatureAlgorithm').use(rfc5280.AlgorithmIdentifier),
     this.key('signature').bitstr(),
@@ -29,7 +31,7 @@ var Signature = asn1.define('Signature', function() {
 });
 exports.Signature = Signature;
 
-var Request = asn1.define('Request', function() {
+const Request = asn1.define('Request', function() {
   this.seq().obj(
     this.key('reqCert').use(CertID),
     this.key('singleRequestExtensions').optional().explicit(0).seqof(
@@ -38,7 +40,7 @@ var Request = asn1.define('Request', function() {
 });
 exports.Request = Request;
 
-var OCSPResponse = asn1.define('OCSPResponse', function() {
+const OCSPResponse = asn1.define('OCSPResponse', function() {
   this.seq().obj(
     this.key('responseStatus').use(ResponseStatus),
     this.key('responseBytes').optional().explicit(0).seq().obj(
@@ -51,7 +53,7 @@ var OCSPResponse = asn1.define('OCSPResponse', function() {
 });
 exports.OCSPResponse = OCSPResponse;
 
-var ResponseStatus = asn1.define('ResponseStatus', function() {
+const ResponseStatus = asn1.define('ResponseStatus', function() {
   this.enum({
     0: 'successful',
     1: 'malformed_request',
@@ -63,7 +65,7 @@ var ResponseStatus = asn1.define('ResponseStatus', function() {
 });
 exports.ResponseStatus = ResponseStatus;
 
-var BasicOCSPResponse = asn1.define('BasicOCSPResponse', function() {
+const BasicOCSPResponse = asn1.define('BasicOCSPResponse', function() {
   this.seq().obj(
     this.key('tbsResponseData').use(ResponseData),
     this.key('signatureAlgorithm').use(rfc5280.AlgorithmIdentifier),
@@ -73,7 +75,7 @@ var BasicOCSPResponse = asn1.define('BasicOCSPResponse', function() {
 });
 exports.BasicOCSPResponse = BasicOCSPResponse;
 
-var ResponseData = asn1.define('ResponseData', function() {
+const ResponseData = asn1.define('ResponseData', function() {
   this.seq().obj(
     this.key('version').def('v1').explicit(0).use(rfc5280.Version),
     this.key('responderID').use(ResponderID),
@@ -85,7 +87,7 @@ var ResponseData = asn1.define('ResponseData', function() {
 });
 exports.ResponseData = ResponseData;
 
-var ResponderID = asn1.define('ResponderId', function() {
+const ResponderID = asn1.define('ResponderId', function() {
   this.choice({
     byName: this.explicit(1).use(rfc5280.Name),
     byKey: this.explicit(2).use(KeyHash)
@@ -93,12 +95,12 @@ var ResponderID = asn1.define('ResponderId', function() {
 });
 exports.ResponderID = ResponderID;
 
-var KeyHash = asn1.define('KeyHash', function() {
+const KeyHash = asn1.define('KeyHash', function() {
   this.octstr();
 });
 exports.KeyHash = KeyHash;
 
-var SingleResponse = asn1.define('SingleResponse', function() {
+const SingleResponse = asn1.define('SingleResponse', function() {
   this.seq().obj(
     this.key('certId').use(CertID),
     this.key('certStatus').use(CertStatus),
@@ -109,7 +111,7 @@ var SingleResponse = asn1.define('SingleResponse', function() {
 });
 exports.SingleResponse = SingleResponse;
 
-var CertStatus = asn1.define('CertStatus', function() {
+const CertStatus = asn1.define('CertStatus', function() {
   this.choice({
     good: this.implicit(0).null_(),
     revoked: this.implicit(1).use(RevokedInfo),
@@ -118,7 +120,7 @@ var CertStatus = asn1.define('CertStatus', function() {
 });
 exports.CertStatus = CertStatus;
 
-var RevokedInfo = asn1.define('RevokedInfo', function() {
+const RevokedInfo = asn1.define('RevokedInfo', function() {
   this.seq().obj(
     this.key('revocationTime').gentime(),
     this.key('revocationReason').optional().explicit(0).use(rfc5280.ReasonCode)
@@ -126,7 +128,7 @@ var RevokedInfo = asn1.define('RevokedInfo', function() {
 });
 exports.RevokedInfo = RevokedInfo;
 
-var CertID = asn1.define('CertID', function() {
+const CertID = asn1.define('CertID', function() {
   this.seq().obj(
     this.key('hashAlgorithm').use(rfc5280.AlgorithmIdentifier),
     this.key('issuerNameHash').octstr(),
@@ -136,7 +138,7 @@ var CertID = asn1.define('CertID', function() {
 });
 exports.CertID = CertID;
 
-var Nonce = asn1.define('Nonce', function() {
+const Nonce = asn1.define('Nonce', function() {
   this.octstr();
 });
 exports.Nonce = Nonce;

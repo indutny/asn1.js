@@ -170,7 +170,7 @@ var RevokedCertificate = asn1.define('RevokedCertificate', function() {
     this.key('userCertificate').use(CertificateSerialNumber),
     this.key('revocationDate').use(Time),
     this.key('crlEntryExtensions').optional().seqof(Extension)
-  )
+  );
 });
 
 // Extension  ::=  SEQUENCE  {
@@ -184,7 +184,7 @@ var Extension = asn1.define('Extension', function() {
     this.key('extnValue').octstr().contains(function(obj) {
       var out = x509Extensions[obj.extnID];
       // Cope with unknown extensions
-      return out ? out : asn1.define('OctString', function() { this.any() })
+      return out ? out : asn1.define('OctString', function() { this.any(); });
     })
   );
 });
@@ -260,9 +260,9 @@ rfc5280.RDNSequence = RDNSequence;
 // RelativeDistinguishedName ::=
 //      SET SIZE (1..MAX) OF AttributeTypeAndValue
 var RelativeDistinguishedName = asn1.define('RelativeDistinguishedName',
-                                            function() {
-  this.setof(AttributeTypeAndValue);
-});
+  function() {
+    this.setof(AttributeTypeAndValue);
+  });
 rfc5280.RelativeDistinguishedName = RelativeDistinguishedName;
 
 // AttributeTypeAndValue ::= SEQUENCE {
@@ -325,7 +325,7 @@ var AuthorityKeyIdentifier = asn1.define('AuthorityKeyIdentifier', function() {
     this.key('keyIdentifier').implicit(0).optional().use(KeyIdentifier),
     this.key('authorityCertIssuer').implicit(1).optional().use(GeneralNames),
     this.key('authorityCertSerialNumber').implicit(2).optional()
-    .use(CertificateSerialNumber)
+      .use(CertificateSerialNumber)
   );
 });
 rfc5280.AuthorityKeyIdentifier = AuthorityKeyIdentifier;
@@ -338,9 +338,9 @@ rfc5280.KeyIdentifier = KeyIdentifier;
 
 // CertificateSerialNumber  ::=  INTEGER
 var CertificateSerialNumber = asn1.define('CertificateSerialNumber',
-                                          function() {
-  this.int();
-});
+  function() {
+    this.int();
+  });
 rfc5280.CertificateSerialNumber = CertificateSerialNumber;
 
 // ORAddress ::= SEQUENCE {
@@ -352,7 +352,7 @@ var ORAddress = asn1.define('ORAddress', function() {
   this.seq().obj(
     this.key('builtInStandardAttributes').use(BuiltInStandardAttributes),
     this.key('builtInDomainDefinedAttributes').optional()
-    .use(BuiltInDomainDefinedAttributes),
+      .use(BuiltInDomainDefinedAttributes),
     this.key('extensionAttributes').optional().use(ExtensionAttributes)
   );
 });
@@ -369,23 +369,23 @@ rfc5280.ORAddress = ORAddress;
 //    personal-name             [5] IMPLICIT PersonalName OPTIONAL,
 //    organizational-unit-names [6] IMPLICIT OrganizationalUnitNames OPTIONAL }
 var BuiltInStandardAttributes = asn1.define('BuiltInStandardAttributes',
-                                            function() {
-  this.seq().obj(
-    this.key('countryName').optional().use(CountryName),
-    this.key('administrationDomainName').optional()
-    .use(AdministrationDomainName),
-    this.key('networkAddress').implicit(0).optional().use(NetworkAddress),
-    this.key('terminalIdentifier').implicit(1).optional()
+  function() {
+    this.seq().obj(
+      this.key('countryName').optional().use(CountryName),
+      this.key('administrationDomainName').optional()
+        .use(AdministrationDomainName),
+      this.key('networkAddress').implicit(0).optional().use(NetworkAddress),
+      this.key('terminalIdentifier').implicit(1).optional()
         .use(TerminalIdentifier),
-    this.key('privateDomainName').explicit(2).optional().use(PrivateDomainName),
-    this.key('organizationName').implicit(3).optional().use(OrganizationName),
-    this.key('numericUserIdentifier').implicit(4).optional()
+      this.key('privateDomainName').explicit(2).optional().use(PrivateDomainName),
+      this.key('organizationName').implicit(3).optional().use(OrganizationName),
+      this.key('numericUserIdentifier').implicit(4).optional()
         .use(NumericUserIdentifier),
-    this.key('personalName').implicit(5).optional().use(PersonalName),
-    this.key('organizationalUnitNames').implicit(6).optional()
+      this.key('personalName').implicit(5).optional().use(PersonalName),
+      this.key('organizationalUnitNames').implicit(6).optional()
         .use(OrganizationalUnitNames)
-  );
-});
+    );
+  });
 rfc5280.BuiltInStandardAttributes = BuiltInStandardAttributes;
 
 // CountryName ::= CHOICE {
@@ -404,12 +404,12 @@ rfc5280.CountryName = CountryName;
 //    numeric   NumericString,
 //    printable PrintableString }
 var AdministrationDomainName = asn1.define('AdministrationDomainName',
-                                           function() {
-  this.choice({
-    numeric: this.numstr(),
-    printable: this.printstr()
+  function() {
+    this.choice({
+      numeric: this.numstr(),
+      printable: this.printstr()
+    });
   });
-});
 rfc5280.AdministrationDomainName = AdministrationDomainName;
 
 // NetworkAddress ::= X121Address
@@ -471,9 +471,9 @@ rfc5280.PersonalName = PersonalName;
 // OrganizationalUnitNames ::= SEQUENCE SIZE (1..ub-organizational-units)
 //                              OF OrganizationalUnitName
 var OrganizationalUnitNames = asn1.define('OrganizationalUnitNames',
-                                          function() {
-  this.seqof(OrganizationalUnitName);
-});
+  function() {
+    this.seqof(OrganizationalUnitName);
+  });
 rfc5280.OrganizationalUnitNames = OrganizationalUnitNames;
 
 // OrganizationalUnitName ::= PrintableString (SIZE
@@ -488,8 +488,8 @@ rfc5280.OrganizationalUnitName = OrganizationalUnitName;
 //                       OF BuiltInDomainDefinedAttribute
 var BuiltInDomainDefinedAttributes = asn1.define(
   'BuiltInDomainDefinedAttributes', function() {
-  this.seqof(BuiltInDomainDefinedAttribute);
-});
+    this.seqof(BuiltInDomainDefinedAttribute);
+  });
 rfc5280.BuiltInDomainDefinedAttributes = BuiltInDomainDefinedAttributes;
 
 // BuiltInDomainDefinedAttribute ::= SEQUENCE {
@@ -497,12 +497,12 @@ rfc5280.BuiltInDomainDefinedAttributes = BuiltInDomainDefinedAttributes;
 //    value PrintableString (SIZE (1..ub-domain-defined-attribute-value-length))
 //}
 var BuiltInDomainDefinedAttribute = asn1.define('BuiltInDomainDefinedAttribute',
-                                                function() {
-  this.seq().obj(
-    this.key('type').printstr(),
-    this.key('value').printstr()
-  );
-});
+  function() {
+    this.seq().obj(
+      this.key('type').printstr(),
+      this.key('value').printstr()
+    );
+  });
 rfc5280.BuiltInDomainDefinedAttribute = BuiltInDomainDefinedAttribute;
 
 
@@ -622,9 +622,9 @@ rfc5280.IssuerAlternativeName = IssuerAlternativeName;
 
 // SubjectDirectoryAttributes ::= SEQUENCE SIZE (1..MAX) OF Attribute
 var SubjectDirectoryAttributes = asn1.define('SubjectDirectoryAttributes',
-                                             function() {
-  this.seqof(Attribute);
-});
+  function() {
+    this.seqof(Attribute);
+  });
 rfc5280.SubjectDirectoryAttributes = SubjectDirectoryAttributes;
 
 // BasicConstraints ::= SEQUENCE {
@@ -716,7 +716,7 @@ rfc5280.CRLDistributionPoints = CRLDistributionPoints;
 var DistributionPoint = asn1.define('DistributionPoint', function() {
   this.seq().obj(
     this.key('distributionPoint').optional().explicit(0)
-        .use(DistributionPointName),
+      .use(DistributionPointName),
     this.key('reasons').optional().implicit(1).use(ReasonFlags),
     this.key('cRLIssuer').optional().implicit(2).use(GeneralNames)
   );
@@ -764,9 +764,9 @@ rfc5280.FreshestCRL = FreshestCRL;
 // AuthorityInfoAccessSyntax  ::=
 //         SEQUENCE SIZE (1..MAX) OF AccessDescription
 var AuthorityInfoAccessSyntax = asn1.define('AuthorityInfoAccessSyntax',
-                                            function() {
-  this.seqof(AccessDescription);
-});
+  function() {
+    this.seqof(AccessDescription);
+  });
 rfc5280.AuthorityInfoAccessSyntax = AuthorityInfoAccessSyntax;
 
 // AccessDescription  ::=  SEQUENCE {
@@ -783,9 +783,9 @@ rfc5280.AccessDescription = AccessDescription;
 // SubjectInfoAccessSyntax  ::=
 //            SEQUENCE SIZE (1..MAX) OF AccessDescription
 var SubjectInformationAccess = asn1.define('SubjectInformationAccess',
-                                           function() {
-  this.seqof(AccessDescription);
-});
+  function() {
+    this.seqof(AccessDescription);
+  });
 rfc5280.SubjectInformationAccess = SubjectInformationAccess;
 
 /**
@@ -811,17 +811,17 @@ rfc5280.DeltaCRLIndicator = DeltaCRLIndicator;
 //         indirectCRL                [4] BOOLEAN DEFAULT FALSE,
 //         onlyContainsAttributeCerts [5] BOOLEAN DEFAULT FALSE }
 var IssuingDistributionPoint = asn1.define('IssuingDistributionPoint',
-                                           function() {
-  this.seq().obj(
-    this.key('distributionPoint').explicit(0).optional()
+  function() {
+    this.seq().obj(
+      this.key('distributionPoint').explicit(0).optional()
         .use(DistributionPointName),
-    this.key('onlyContainsUserCerts').implicit(1).def(false).bool(),
-    this.key('onlyContainsCACerts').implicit(2).def(false).bool(),
-    this.key('onlySomeReasons').implicit(3).optional().use(ReasonFlags),
-    this.key('indirectCRL').implicit(4).def(false).bool(),
-    this.key('onlyContainsAttributeCerts').implicit(5).def(false).bool()
-  );
-});
+      this.key('onlyContainsUserCerts').implicit(1).def(false).bool(),
+      this.key('onlyContainsCACerts').implicit(2).def(false).bool(),
+      this.key('onlySomeReasons').implicit(3).optional().use(ReasonFlags),
+      this.key('indirectCRL').implicit(4).def(false).bool(),
+      this.key('onlyContainsAttributeCerts').implicit(5).def(false).bool()
+    );
+  });
 rfc5280.IssuingDistributionPoint = IssuingDistributionPoint;
 
 // CRLReason ::= ENUMERATED {

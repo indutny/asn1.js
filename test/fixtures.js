@@ -1,3 +1,6 @@
+'use strict';
+/* global describe it */
+
 var assert = require('assert');
 
 function jsonEqual(a, b) {

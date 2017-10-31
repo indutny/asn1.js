@@ -15,7 +15,7 @@ var TBSRequest = asn1.define('TBSRequest', function() {
     this.key('requestorName').optional().explicit(1).use(rfc5280.GeneralName),
     this.key('requestList').seqof(Request),
     this.key('requestExtensions').optional().explicit(2)
-        .seqof(rfc5280.Extension)
+      .seqof(rfc5280.Extension)
   );
 });
 exports.TBSRequest = TBSRequest;
@@ -33,7 +33,7 @@ var Request = asn1.define('Request', function() {
   this.seq().obj(
     this.key('reqCert').use(CertID),
     this.key('singleRequestExtensions').optional().explicit(0).seqof(
-        rfc5280.Extension)
+      rfc5280.Extension)
   );
 });
 exports.Request = Request;
@@ -42,10 +42,10 @@ var OCSPResponse = asn1.define('OCSPResponse', function() {
   this.seq().obj(
     this.key('responseStatus').use(ResponseStatus),
     this.key('responseBytes').optional().explicit(0).seq().obj(
-        this.key('responseType').objid({
-          '1 3 6 1 5 5 7 48 1 1': 'id-pkix-ocsp-basic'
-        }),
-        this.key('response').octstr()
+      this.key('responseType').objid({
+        '1 3 6 1 5 5 7 48 1 1': 'id-pkix-ocsp-basic'
+      }),
+      this.key('response').octstr()
     )
   );
 });
@@ -80,7 +80,7 @@ var ResponseData = asn1.define('ResponseData', function() {
     this.key('producedAt').gentime(),
     this.key('responses').seqof(SingleResponse),
     this.key('responseExtensions').optional().explicit(0)
-        .seqof(rfc5280.Extension)
+      .seqof(rfc5280.Extension)
   );
 });
 exports.ResponseData = ResponseData;

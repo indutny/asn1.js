@@ -4,6 +4,9 @@
   "description": "ASN.1 encoder and decoder",
   "main": "lib/asn1.js",
   "scripts": {
+    "lint-2560": "eslint --fix rfc/2560/*.js rfc/2560/test/*.js",
+    "lint-5280": "eslint --fix rfc/5280/*.js rfc/5280/test/*.js",
+    "lint": "eslint --fix lib/*.js lib/**/*.js lib/**/**/*.js && npm run lint-2560 && npm run lint-5280",
     "test": "mocha --reporter spec test/*-test.js && cd rfc/2560 && npm i && npm test && cd ../../rfc/5280 && npm i && npm test"
   },
   "repository": {
@@ -21,6 +24,7 @@
   },
   "homepage": "https://github.com/indutny/asn1.js",
   "devDependencies": {
+    "eslint": "^4.10.0",
     "mocha": "^2.3.4"
   },
   "dependencies": {

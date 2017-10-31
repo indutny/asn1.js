@@ -1,3 +1,6 @@
+'use strict';
+/* global describe it */
+
 var assert = require('assert');
 var asn1 = require('..');
 var bn = asn1.bignum;

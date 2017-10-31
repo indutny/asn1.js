@@ -12,6 +12,9 @@
     "rfc2560",
     "der"
   ],
+  "scripts": {
+    "test": "mocha --reporter=spec test/*-test.js"
+  },
   "author": "Fedor Indutny",
   "license": "MIT",
   "bugs": {
@@ -23,5 +26,8 @@
   },
   "peerDependencies": {
     "asn1.js": "^4.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
   }
 }

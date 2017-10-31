@@ -1,10 +1,5 @@
-try {
-  var asn1 = require('asn1.js');
-  var rfc5280 = require('asn1.js-rfc5280');
-} catch (e) {
-  var asn1 = require('../' + '..');
-  var rfc5280 = require('../' + '5280');
-}
+var asn1 = require('asn1.js');
+var rfc5280 = require('asn1.js-rfc5280');
 
 var OCSPRequest = asn1.define('OCSPRequest', function() {
   this.seq().obj(

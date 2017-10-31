@@ -12,6 +12,9 @@
     "rfc5280",
     "der"
   ],
+  "scripts": {
+    "test": "mocha --reporter=spec test/*-test.js"
+  },
   "author": "Felix Hanley",
   "license": "MIT",
   "bugs": {
@@ -20,5 +23,8 @@
   "homepage": "https://github.com/indutny/asn1.js",
   "dependencies": {
     "asn1.js": "^4.5.0"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
   }
 }

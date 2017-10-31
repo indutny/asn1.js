@@ -1,11 +1,11 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
-var BN = require('bn.js');
+const assert = require('assert');
+const asn1 = require('..');
+const BN = require('bn.js');
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js DER encoder', function() {
   /*
@@ -13,11 +13,11 @@ describe('asn1.js DER encoder', function() {
    * this adds two more bytes to resulting buffer.
    * */
   it('should code explicit tag as 0xA2', function() {
-    var E = asn1.define('E', function() {
+    const E = asn1.define('E', function() {
       this.explicit(2).octstr()
     });
 
-    var encoded = E.encode('X', 'der');
+    const encoded = E.encode('X', 'der');
 
     // <Explicit tag> <wrapped len> <str tag> <len> <payload>
     assert.equal(encoded.toString('hex'), 'a203040158');
@@ -26,10 +26,10 @@ describe('asn1.js DER encoder', function() {
 
   function test(name, model_definition, model_value, der_expected) {
     it(name, function() {
-      var Model, der_actual;
+      let Model, derActual;
       Model = asn1.define('Model', model_definition);
-      der_actual = Model.encode(model_value, 'der');
-      assert.deepEqual(der_actual, new Buffer(der_expected,'hex'));
+      derActual = Model.encode(model_value, 'der');
+      assert.deepEqual(derActual, new Buffer(der_expected,'hex'));
     });
   }
 
@@ -44,14 +44,14 @@ describe('asn1.js DER encoder', function() {
   }, { type: 'apple', value: true }, '0101ff');
 
   test('should encode implicit seqof', function() {
-    var Int = asn1.define('Int', function() {
+    const Int = asn1.define('Int', function() {
       this.int();
     });
     this.implicit(0).seqof(Int);
   }, [ 1 ], 'A003020101' );
 
   test('should encode explicit seqof', function() {
-    var Int = asn1.define('Int', function() {
+    const Int = asn1.define('Int', function() {
       this.int();
     });
     this.explicit(0).seqof(Int);
@@ -77,15 +77,15 @@ describe('asn1.js DER encoder', function() {
   }, {required: false, value: 1}, '3003020101');
 
   it('should encode optional and use', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.int();
     });
 
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.optional().use(B);
     });
 
-    var out = A.encode(1, 'der');
+    const out = A.encode(1, 'der');
     assert.equal(out.toString('hex'), '020101');
   });
 
@@ -109,16 +109,16 @@ describe('asn1.js DER encoder', function() {
   }, 'Привет', '1e0c041f04400438043204350442');
 
   it('should encode encapsulated models', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.seq().obj(
         this.key('nested').int()
       );
     });
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.octstr().contains(B);
     });
 
-    var out = A.encode({ nested: 5 }, 'der')
+    const out = A.encode({ nested: 5 }, 'der')
     assert.equal(out.toString('hex'), '04053003020105');
   });
 
@@ -139,13 +139,13 @@ describe('asn1.js DER encoder', function() {
   }, 'septic tank', '1A0B7365707469632074616E6B');
 
   it('should not require encoder param', function() {
-     var M = asn1.define('Model', function() {
+     const M = asn1.define('Model', function() {
        this.choice({
          apple: this.bool(),
        });
      });
      // Note no encoder specified, defaults to 'der'
-     var encoded = M.encode({ 'type': 'apple', 'value': true });
+     const encoded = M.encode({ 'type': 'apple', 'value': true });
      assert.deepEqual(encoded, new Buffer('0101ff', 'hex'));
   });
 });

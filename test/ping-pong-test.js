@@ -1,20 +1,20 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
-var fixtures = require('./fixtures');
-var jsonEqual = fixtures.jsonEqual;
+const assert = require('assert');
+const asn1 = require('..');
+const fixtures = require('./fixtures');
+const jsonEqual = fixtures.jsonEqual;
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js ping/pong', function() {
   function test(name, model, input, expected) {
     it('should support ' + name, function() {
-      var M = asn1.define('TestModel', model);
+      const M = asn1.define('TestModel', model);
 
-      var encoded = M.encode(input, 'der');
-      var decoded = M.decode(encoded, 'der');
+      const encoded = M.encode(input, 'der');
+      const decoded = M.decode(encoded, 'der');
       jsonEqual(decoded, expected !== undefined ? expected : input);
     });
   }
@@ -159,7 +159,7 @@ describe('asn1.js ping/pong', function() {
     }, { content: new Buffer('0500', 'hex') });
 
     test('seqof', function() {
-      var S = asn1.define('S', function() {
+      const S = asn1.define('S', function() {
         this.seq().obj(
           this.key('a').def('b').int({ 0: 'a', 1: 'b' }),
           this.key('c').def('d').int({ 2: 'c', 3: 'd' })

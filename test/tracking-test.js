@@ -1,36 +1,36 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
-var fixtures = require('./fixtures');
-var jsonEqual = fixtures.jsonEqual;
+const assert = require('assert');
+const asn1 = require('..');
+const fixtures = require('./fixtures');
+const jsonEqual = fixtures.jsonEqual;
 
 describe('asn1.js tracking', function() {
   it('should track nested offsets', () => {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.seq().obj(
         this.key('x').int(),
         this.key('y').int()
       );
     });
 
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.seq().obj(
         this.key('a').explicit(0).use(B),
         this.key('b').use(B)
       );
     });
 
-    var input = {
+    const input = {
       a: { x: 1, y: 2 },
       b: { x: 3, y: 4 }
     };
 
-    var tracked = [];
+    const tracked = [];
 
-    var encoded = A.encode(input, 'der');
-    var decoded = A.decode(encoded, 'der', {
+    const encoded = A.encode(input, 'der');
+    const decoded = A.decode(encoded, 'der', {
       track: function(path, start, end, type) {
         tracked.push([ type, path, start, end ]);
       }

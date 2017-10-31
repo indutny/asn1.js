@@ -1,14 +1,14 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
-var BN = require('bn.js');
+const assert = require('assert');
+const asn1 = require('..');
+const BN = require('bn.js');
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js PEM encoder/decoder', function() {
-  var model = asn1.define('Model', function() {
+  const model = asn1.define('Model', function() {
     this.seq().obj(
       this.key('a').int(),
       this.key('b').bitstr(),
@@ -16,12 +16,12 @@ describe('asn1.js PEM encoder/decoder', function() {
     );
   });
 
-  var hundred = new Buffer(100);
+  const hundred = new Buffer(100);
   hundred.fill('A');
 
   it('should encode PEM', function() {
 
-    var out = model.encode({
+    const out = model.encode({
       a: new BN(123),
       b: {
         data: hundred,
@@ -32,7 +32,7 @@ describe('asn1.js PEM encoder/decoder', function() {
       label: 'MODEL'
     });
 
-    var expected =
+    const expected =
         '-----BEGIN MODEL-----\n' +
         'MG4CAXsDZQBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
@@ -42,14 +42,14 @@ describe('asn1.js PEM encoder/decoder', function() {
   });
 
   it('should decode PEM', function() {
-    var expected =
+    const expected =
         '-----BEGIN MODEL-----\n' +
         'MG4CAXsDZQBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBAgIByA==\n' +
         '-----END MODEL-----';
 
-    var out = model.decode(expected, 'pem', { label: 'MODEL' });
+    const out = model.decode(expected, 'pem', { label: 'MODEL' });
     assert.equal(out.a.toString(), '123');
     assert.equal(out.b.data.toString(), hundred.toString());
     assert.equal(out.c.toString(), '456');

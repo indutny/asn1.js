@@ -1,24 +1,24 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
-var bn = asn1.bignum;
-var fixtures = require('./fixtures');
-var jsonEqual = fixtures.jsonEqual;
+const assert = require('assert');
+const asn1 = require('..');
+const bn = asn1.bignum;
+const fixtures = require('./fixtures');
+const jsonEqual = fixtures.jsonEqual;
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js error', function() {
   describe('encoder', function() {
     function test(name, model, input, expected) {
       it('should support ' + name, function() {
-        var M = asn1.define('TestModel', model);
+        const M = asn1.define('TestModel', model);
 
-        var error;
+        let error;
         assert.throws(function() {
           try {
-            var encoded = M.encode(input, 'der');
+            const encoded = M.encode(input, 'der');
           } catch (e) {
             error = e;
             throw e;
@@ -81,7 +81,7 @@ describe('asn1.js error', function() {
       }, { a: { b: { c: 'hello' } } } , /map at: \["a"\]\["b"\]\["c"\]/i);
 
       test('use', function() {
-        var S = asn1.define('S', function() {
+        const S = asn1.define('S', function() {
           this.seq().obj(
             this.key('x').int()
           );
@@ -99,18 +99,18 @@ describe('asn1.js error', function() {
   describe('decoder', function() {
     function test(name, model, input, expected) {
       it('should support ' + name, function() {
-        var M = asn1.define('TestModel', model);
+        const M = asn1.define('TestModel', model);
 
-        var error;
+        let error;
         assert.throws(function() {
           try {
-            var decoded = M.decode(new Buffer(input, 'hex'), 'der');
+            const decoded = M.decode(new Buffer(input, 'hex'), 'der');
           } catch (e) {
             error = e;
             throw e;
           }
         });
-        var partial = M.decode(new Buffer(input, 'hex'), 'der', {
+        const partial = M.decode(new Buffer(input, 'hex'), 'der', {
           partial: true
         });
 
@@ -179,9 +179,9 @@ describe('asn1.js error', function() {
   describe('partial decoder', function() {
     function test(name, model, input, expectedObj, expectedErrs) {
       it('should support ' + name, function() {
-        var M = asn1.define('TestModel', model);
+        const M = asn1.define('TestModel', model);
 
-        var decoded = M.decode(new Buffer(input, 'hex'), 'der', {
+        const decoded = M.decode(new Buffer(input, 'hex'), 'der', {
           partial: true
         });
 

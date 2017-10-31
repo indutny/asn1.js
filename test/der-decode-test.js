@@ -1,55 +1,55 @@
 'use strict';
 /* global describe it */
 
-var assert = require('assert');
-var asn1 = require('..');
+const assert = require('assert');
+const asn1 = require('..');
 
-var Buffer = require('buffer').Buffer;
+const Buffer = require('buffer').Buffer;
 
 describe('asn1.js DER decoder', function() {
   it('should propagate implicit tag', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.seq().obj(
         this.key('b').octstr()
       );
     });
 
-    var A = asn1.define('Bug', function() {
+    const A = asn1.define('Bug', function() {
       this.seq().obj(
         this.key('a').implicit(0).use(B)
       );
     });
 
-    var out = A.decode(new Buffer('300720050403313233', 'hex'), 'der');
+    const out = A.decode(new Buffer('300720050403313233', 'hex'), 'der');
     assert.equal(out.a.b.toString(), '123');
   });
 
   it('should decode optional tag to undefined key', function() {
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.seq().obj(
         this.key('key').bool(),
         this.optional().key('opt').bool()
       );
     });
-    var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    const out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true });
   });
 
   it('should decode optional tag to default value', function() {
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.seq().obj(
         this.key('key').bool(),
         this.optional().key('opt').octstr().def('default')
       );
     });
-    var out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    const out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true, 'opt': 'default' });
   });
 
   function test(name, model, inputHex, expected) {
     it(name, function() {
-      var M = asn1.define('Model', model);
-      var decoded = M.decode(new Buffer(inputHex,'hex'), 'der');
+      const M = asn1.define('Model', model);
+      const decoded = M.decode(new Buffer(inputHex,'hex'), 'der');
       assert.deepEqual(decoded, expected);
     });
   }
@@ -61,15 +61,15 @@ describe('asn1.js DER decoder', function() {
   }, '0101ff', { 'type': 'apple', 'value': true });
 
   it('should decode optional and use', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.int();
     });
 
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.optional().use(B);
     });
 
-    var out = A.decode(new Buffer('020101', 'hex'), 'der');
+    const out = A.decode(new Buffer('020101', 'hex'), 'der');
     assert.equal(out.toString(10), '1');
   });
 
@@ -99,16 +99,16 @@ describe('asn1.js DER decoder', function() {
   }, '060a2a830e030a0101010202', 'yes');
 
   it('should decode encapsulated models', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.seq().obj(
         this.key('nested').int()
       );
     });
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.octstr().contains(B);
     });
 
-    var out = A.decode(new Buffer('04053003020105', 'hex'), 'der');
+    const out = A.decode(new Buffer('04053003020105', 'hex'), 'der');
     assert.equal(out.nested.toString(10), '5');
   });
 
@@ -129,19 +129,19 @@ describe('asn1.js DER decoder', function() {
   }, '1A0B7365707469632074616E6B', 'septic tank');
 
   it('should decode optional seqof', function() {
-    var B = asn1.define('B', function() {
+    const B = asn1.define('B', function() {
       this.seq().obj(
         this.key('num').int()
       );
     });
-    var A = asn1.define('A', function() {
+    const A = asn1.define('A', function() {
       this.seq().obj(
         this.key('test1').seqof(B),
         this.key('test2').optional().seqof(B)
       );
     });
 
-    var out = A.decode(new Buffer(
+    let out = A.decode(new Buffer(
       '3018300A30030201013003020102300A30030201033003020104', 'hex'), 'der');
     assert.equal(out.test1[0].num.toString(10), 1);
     assert.equal(out.test1[1].num.toString(10), 2);
@@ -155,13 +155,13 @@ describe('asn1.js DER decoder', function() {
   });
 
   it('should not require decoder param', function() {
-     var M = asn1.define('Model', function() {
+     const M = asn1.define('Model', function() {
        this.choice({
          apple: this.bool(),
        });
      });
      // Note no decoder specified, defaults to 'der'
-     var decoded = M.decode(new Buffer('0101ff', 'hex'));
+     const decoded = M.decode(new Buffer('0101ff', 'hex'));
      assert.deepEqual(decoded, { 'type': 'apple', 'value': true });
   });
 });

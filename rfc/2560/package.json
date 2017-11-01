@@ -1,6 +1,6 @@
 {
   "name": "asn1.js-rfc2560",
-  "version": "4.0.7",
+  "version": "5.0.0",
   "description": "RFC2560 structures for asn1.js",
   "main": "index.js",
   "repository": {
@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/indutny/asn1.js",
   "dependencies": {
-    "asn1.js-rfc5280": "^2.0.0"
+    "asn1.js-rfc5280": "^3.0.0"
   },
   "peerDependencies": {
-    "asn1.js": "^4.4.0"
+    "asn1.js": "^5.0.0"
   },
   "devDependencies": {
     "mocha": "^4.0.1"

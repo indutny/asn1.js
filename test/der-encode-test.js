@@ -5,7 +5,7 @@ const assert = require('assert');
 const asn1 = require('..');
 const BN = require('bn.js');
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js DER encoder', function() {
   /*
@@ -29,13 +29,13 @@ describe('asn1.js DER encoder', function() {
       let Model, derActual;
       Model = asn1.define('Model', model_definition);
       derActual = Model.encode(model_value, 'der');
-      assert.deepEqual(derActual, new Buffer(der_expected,'hex'));
+      assert.deepEqual(derActual, Buffer.from(der_expected,'hex'));
     });
   }
 
   test('should encode objDesc', function() {
     this.objDesc();
-  }, new Buffer('280'), '0703323830');
+  }, Buffer.from('280'), '0703323830');
 
   test('should encode choice', function() {
     this.choice({
@@ -146,6 +146,6 @@ describe('asn1.js DER encoder', function() {
      });
      // Note no encoder specified, defaults to 'der'
      const encoded = M.encode({ 'type': 'apple', 'value': true });
-     assert.deepEqual(encoded, new Buffer('0101ff', 'hex'));
+     assert.deepEqual(encoded, Buffer.from('0101ff', 'hex'));
   });
 });

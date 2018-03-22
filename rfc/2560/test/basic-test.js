@@ -4,11 +4,11 @@
 const assert = require('assert');
 const rfc2560 = require('..');
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js RFC2560', function() {
   it('should decode OCSP response', function() {
-    const data = new Buffer(
+    const data = Buffer.from(
       '308201d40a0100a08201cd308201c906092b0601050507300101048201ba308201b630' +
       '819fa216041499e4405f6b145e3e05d9ddd36354fc62b8f700ac180f32303133313133' +
       '303037343531305a30743072304a300906052b0e03021a050004140226ee2f5fa28108' +
@@ -58,8 +58,8 @@ describe('asn1.js RFC2560', function() {
         {
           reqCert: {
             hashAlgorithm: { algorithm: [ 1, 3, 14, 3, 2, 26 ] },
-            issuerNameHash: new Buffer('01', 'hex'),
-            issuerKeyHash: new Buffer('02', 'hex'),
+            issuerNameHash: Buffer.from('01', 'hex'),
+            issuerKeyHash: Buffer.from('02', 'hex'),
             serialNumber: 0x2b
           }
         }
@@ -68,7 +68,7 @@ describe('asn1.js RFC2560', function() {
         {
           extnID: [ 1, 3, 6, 1, 5, 5, 7, 48, 1, 2 ],
           critical: false,
-          extnValue: new Buffer('03', 'hex')
+          extnValue: Buffer.from('03', 'hex')
         }
       ]
     };

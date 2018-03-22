@@ -5,7 +5,7 @@ const assert = require('assert');
 const asn1 = require('..');
 const BN = require('bn.js');
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js PEM encoder/decoder', function() {
   const model = asn1.define('Model', function() {
@@ -16,8 +16,7 @@ describe('asn1.js PEM encoder/decoder', function() {
     );
   });
 
-  const hundred = new Buffer(100);
-  hundred.fill('A');
+  const hundred = Buffer.alloc(100, 'A');
 
   it('should encode PEM', function() {
 

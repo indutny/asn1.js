@@ -6,7 +6,7 @@ const asn1 = require('..');
 const fixtures = require('./fixtures');
 const jsonEqual = fixtures.jsonEqual;
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js ping/pong', function() {
   function test(name, model, input, expected) {
@@ -30,15 +30,15 @@ describe('asn1.js ping/pong', function() {
 
     test('octstr', function() {
       this.octstr();
-    }, new Buffer('hello'));
+    }, Buffer.from('hello'));
 
     test('objDesc', function() {
       this.objDesc()
-    }, new Buffer('hello'));
+    }, Buffer.from('hello'));
 
     test('bitstr', function() {
       this.bitstr();
-    }, { unused: 4, data: new Buffer('hello!') });
+    }, { unused: 4, data: Buffer.from('hello!') });
 
     test('ia5str', function() {
       this.ia5str();
@@ -92,7 +92,7 @@ describe('asn1.js ping/pong', function() {
 
     test('any', function() {
       this.any();
-    }, new Buffer('02210081347a0d3d674aeeb563061d94a3aea5f6a7' +
+    }, Buffer.from('02210081347a0d3d674aeeb563061d94a3aea5f6a7' +
                   'c6dc153ea90a42c1ca41929ac1b9', 'hex'));
 
     test('default explicit', function() {
@@ -156,7 +156,7 @@ describe('asn1.js ping/pong', function() {
       this.seq().obj(
         this.key('content').optional().any()
       );
-    }, { content: new Buffer('0500', 'hex') });
+    }, { content: Buffer.from('0500', 'hex') });
 
     test('seqof', function() {
       const S = asn1.define('S', function() {

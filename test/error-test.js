@@ -7,7 +7,7 @@ const bn = asn1.bignum;
 const fixtures = require('./fixtures');
 const jsonEqual = fixtures.jsonEqual;
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js error', function() {
   describe('encoder', function() {
@@ -104,13 +104,13 @@ describe('asn1.js error', function() {
         let error;
         assert.throws(function() {
           try {
-            const decoded = M.decode(new Buffer(input, 'hex'), 'der');
+            const decoded = M.decode(Buffer.from(input, 'hex'), 'der');
           } catch (e) {
             error = e;
             throw e;
           }
         });
-        const partial = M.decode(new Buffer(input, 'hex'), 'der', {
+        const partial = M.decode(Buffer.from(input, 'hex'), 'der', {
           partial: true
         });
 
@@ -181,7 +181,7 @@ describe('asn1.js error', function() {
       it('should support ' + name, function() {
         const M = asn1.define('TestModel', model);
 
-        const decoded = M.decode(new Buffer(input, 'hex'), 'der', {
+        const decoded = M.decode(Buffer.from(input, 'hex'), 'der', {
           partial: true
         });
 

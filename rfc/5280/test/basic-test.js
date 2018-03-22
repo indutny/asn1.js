@@ -6,7 +6,7 @@ const fs = require('fs');
 const asn1 = require('../../../');
 const rfc5280 = require('..');
 
-const Buffer = require('buffer').Buffer;
+const Buffer = require('safer-buffer').Buffer;
 
 describe('asn1.js RFC5280', function() {
 
@@ -48,7 +48,7 @@ describe('asn1.js RFC5280', function() {
   });
 
   it('should decode AuthorityInfoAccess', function() {
-    const data = new Buffer('305a302b06082b06010505073002861f687474703a2f2f70' +
+    const data = Buffer.from('305a302b06082b06010505073002861f687474703a2f2f70' +
                           '6b692e676f6f676c652e636f6d2f47494147322e63727430' +
                           '2b06082b06010505073001861f687474703a2f2f636c6965' +
                           '6e7473312e676f6f676c652e636f6d2f6f637370',
@@ -60,7 +60,7 @@ describe('asn1.js RFC5280', function() {
   });
 
   it('should decode directoryName in GeneralName', function() {
-    const data = new Buffer('a411300f310d300b06022a03160568656c6c6f', 'hex');
+    const data = Buffer.from('a411300f310d300b06022a03160568656c6c6f', 'hex');
 
     const name = rfc5280.GeneralName.decode(data, 'der');
     assert.equal(name.type, 'directoryName');
@@ -124,7 +124,7 @@ describe('asn1.js RFC5280', function() {
       onlyContainsCACerts: false,
       indirectCRL: true,
       onlyContainsAttributeCerts: false,
-      onlySomeReasons: { unused: 0, data: new Buffer('asdf') }
+      onlySomeReasons: { unused: 0, data: Buffer.from('asdf') }
     };
 
     data = rfc5280.IssuingDistributionPoint.encode(input);

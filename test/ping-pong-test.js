@@ -64,9 +64,17 @@ describe('asn1.js ping/pong', function() {
       this.gentime();
     }, 1385921175000);
 
+    test('gentime 0', function() {
+      this.gentime();
+    }, 0, 0);
+
     test('utctime', function() {
       this.utctime();
     }, 1385921175000);
+
+    test('utctime 0', function() {
+      this.utctime();
+    }, 0, 0);
 
     test('utctime regression', function() {
       this.utctime();

@@ -1,5 +1,5 @@
 {
-  "name": "asn1.js",
+  "name": "@lordvlad/asn1.js",
   "version": "5.0.1",
   "description": "ASN.1 encoder and decoder",
   "main": "lib/asn1.js",

@@ -3,6 +3,7 @@
 
 const assert = require('assert');
 const asn1 = require('..');
+const bignum = asn1.bignum;
 
 const Buffer = require('buffer').Buffer;
 
@@ -53,6 +54,22 @@ describe('asn1.js DER decoder', function() {
       assert.deepEqual(decoded, expected);
     });
   }
+
+  it('should decode integers', function() {
+    const Int = asn1.define('Int', function () { this.int(); });
+    const values = [
+      ['020101', 1],
+      ['0203008011', 0x8011],
+      ['02020080', 128],
+      ['0201FF', -1],
+      ['020180', -128],
+      ['0202FF7F', -129]
+    ];
+    values.forEach( function (v) {
+      const decoded = Int.decode(new Buffer(v[0], 'hex'), 'der');
+      assert(decoded.eq(new bignum(v[1])), v[1]);
+    });
+  });
 
   test('should decode choice', function() {
     this.choice({

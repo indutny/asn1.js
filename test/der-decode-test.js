@@ -20,7 +20,7 @@ describe('asn1.js DER decoder', function() {
       );
     });
 
-    const out = A.decode(new Buffer('300720050403313233', 'hex'), 'der');
+    const out = A.decode(Buffer.from('300720050403313233', 'hex'), 'der');
     assert.equal(out.a.b.toString(), '123');
   });
 
@@ -31,7 +31,7 @@ describe('asn1.js DER decoder', function() {
         this.optional().key('opt').bool()
       );
     });
-    const out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    const out = A.decode(Buffer.from('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true });
   });
 
@@ -42,7 +42,7 @@ describe('asn1.js DER decoder', function() {
         this.optional().key('opt').octstr().def('default')
       );
     });
-    const out = A.decode(new Buffer('30030101ff', 'hex'), 'der');
+    const out = A.decode(Buffer.from('30030101ff', 'hex'), 'der');
     assert.deepEqual(out, { 'key': true, 'opt': 'default' });
   });
 
@@ -69,7 +69,7 @@ describe('asn1.js DER decoder', function() {
       this.optional().use(B);
     });
 
-    const out = A.decode(new Buffer('020101', 'hex'), 'der');
+    const out = A.decode(Buffer.from('020101', 'hex'), 'der');
     assert.equal(out.toString(10), '1');
   });
 
@@ -81,7 +81,7 @@ describe('asn1.js DER decoder', function() {
 
   test('should decode objDesc', function() {
     this.objDesc();
-  }, '0703323830', new Buffer('280'));
+  }, '0703323830', Buffer.from('280'));
 
   test('should decode bmpstr', function() {
     this.bmpstr();
@@ -108,7 +108,7 @@ describe('asn1.js DER decoder', function() {
       this.octstr().contains(B);
     });
 
-    const out = A.decode(new Buffer('04053003020105', 'hex'), 'der');
+    const out = A.decode(Buffer.from('04053003020105', 'hex'), 'der');
     assert.equal(out.nested.toString(10), '5');
   });
 
@@ -148,7 +148,7 @@ describe('asn1.js DER decoder', function() {
     assert.equal(out.test2[0].num.toString(10), 3);
     assert.equal(out.test2[1].num.toString(10), 4);
 
-    out = A.decode(new Buffer('300C300A30030201013003020102', 'hex'), 'der');
+    out = A.decode(Buffer.from('300C300A30030201013003020102', 'hex'), 'der');
     assert.equal(out.test1[0].num.toString(10), 1);
     assert.equal(out.test1[1].num.toString(10), 2);
     assert.equal(out.test2, undefined);
@@ -161,7 +161,7 @@ describe('asn1.js DER decoder', function() {
        });
      });
      // Note no decoder specified, defaults to 'der'
-     const decoded = M.decode(new Buffer('0101ff', 'hex'));
+     const decoded = M.decode(Buffer.from('0101ff', 'hex'));
      assert.deepEqual(decoded, { 'type': 'apple', 'value': true });
   });
 });

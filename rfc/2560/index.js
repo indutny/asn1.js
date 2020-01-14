@@ -81,7 +81,7 @@ const ResponseData = asn1.define('ResponseData', function() {
     this.key('responderID').use(ResponderID),
     this.key('producedAt').gentime(),
     this.key('responses').seqof(SingleResponse),
-    this.key('responseExtensions').optional().explicit(0)
+    this.key('responseExtensions').optional().explicit(1)
       .seqof(rfc5280.Extension)
   );
 });

@@ -7,7 +7,8 @@
     "lint-2560": "eslint --fix rfc/2560/*.js rfc/2560/test/*.js",
     "lint-5280": "eslint --fix rfc/5280/*.js rfc/5280/test/*.js",
     "lint": "eslint --fix lib/*.js lib/**/*.js lib/**/**/*.js && npm run lint-2560 && npm run lint-5280",
-    "test": "mocha --reporter spec test/*-test.js && cd rfc/2560 && npm i && npm test && cd ../../rfc/5280 && npm i && npm test && cd ../../ && npm run lint"
+    "mocha": "mocha --reporter spec test/*-test.js",
+    "test": "npm run mocha && cd rfc/2560 && npm i && npm test && cd ../../rfc/5280 && npm i && npm test && cd ../../ && npm run lint"
   },
   "repository": {
     "type": "git",

@@ -73,12 +73,6 @@ describe('asn1.js DER decoder', function() {
     assert.equal(out.toString(10), '1');
   });
 
-  test('should decode indefinite length', function() {
-    this.seq().obj(
-      this.key('key').bool()
-    );
-  }, '30800101ff0000', { 'key': true });
-
   test('should decode objDesc', function() {
     this.objDesc();
   }, '0703323830', Buffer.from('280'));
@@ -155,13 +149,43 @@ describe('asn1.js DER decoder', function() {
   });
 
   it('should not require decoder param', function() {
-     const M = asn1.define('Model', function() {
-       this.choice({
-         apple: this.bool(),
-       });
-     });
-     // Note no decoder specified, defaults to 'der'
-     const decoded = M.decode(Buffer.from('0101ff', 'hex'));
-     assert.deepEqual(decoded, { 'type': 'apple', 'value': true });
+    const M = asn1.define('Model', function() {
+      this.choice({
+        apple: this.bool(),
+      });
+    });
+    // Note no decoder specified, defaults to 'der'
+    const decoded = M.decode(Buffer.from('0101ff', 'hex'));
+    assert.deepEqual(decoded, { 'type': 'apple', 'value': true });
+  });
+
+  it('should throw on indefinite length', function() {
+    const M = asn1.define('Model', function() {
+      this.int();
+    });
+
+    assert.throws(() => {
+      M.decode(Buffer.from('0180ff', 'hex'));
+    }, /indefinite length is not allowed in DER/i);
+  });
+
+  it('should throw on length with leading zeroes', function() {
+    const M = asn1.define('Model', function() {
+      this.int();
+    });
+
+    assert.throws(() => {
+      M.decode(Buffer.from('01817fff', 'hex'));
+    }, /long form of length is used for short length/i);
+  });
+
+  it('should not overflow overflow', function() {
+    const M = asn1.define('Model', function() {
+      this.int();
+    });
+
+    assert.throws(() => {
+      M.decode(Buffer.from('0184ffffffffff', 'hex'));
+    }, /Failed to match tag: "int"/);
   });
 });

@@ -6,7 +6,7 @@ const fs = require('fs');
 const asn1 = require('../../../');
 const rfc5280 = require('..');
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js RFC5280', function() {
 

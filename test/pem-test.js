@@ -5,7 +5,7 @@ const assert = require('assert');
 const asn1 = require('..');
 const BN = require('bn.js');
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js PEM encoder/decoder', function() {
   const model = asn1.define('Model', function() {

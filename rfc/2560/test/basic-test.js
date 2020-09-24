@@ -4,7 +4,7 @@
 const assert = require('assert');
 const rfc2560 = require('..');
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js RFC2560', function() {
   it('should decode OCSP response', function() {

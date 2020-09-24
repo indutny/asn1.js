@@ -7,7 +7,7 @@ const bn = asn1.bignum;
 const fixtures = require('./fixtures');
 const jsonEqual = fixtures.jsonEqual;
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js models', function() {
   describe('plain use', function() {

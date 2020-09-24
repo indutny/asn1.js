@@ -4,7 +4,7 @@
 const assert = require('assert');
 const asn1 = require('..');
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js DER decoder', function() {
   it('should propagate implicit tag', function() {

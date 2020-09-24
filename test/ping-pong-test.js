@@ -6,7 +6,7 @@ const asn1 = require('..');
 const fixtures = require('./fixtures');
 const jsonEqual = fixtures.jsonEqual;
 
-const Buffer = require('safer-buffer').Buffer;
+const Buffer = typeof Buffer === "undefined" ? require('safer-buffer').Buffer : Buffer;
 
 describe('asn1.js ping/pong', function() {
   function test(name, model, input, expected) {

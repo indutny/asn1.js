@@ -128,7 +128,7 @@ describe('asn1.js error', function() {
     describe('primitive', function() {
       test('int', function() {
         this.int();
-      }, '2201', /body of: "int"/);
+      }, '0201', /body of: "int"/);
 
       test('int', function() {
         this.int();
@@ -185,7 +185,7 @@ describe('asn1.js error', function() {
         this.seq().obj(
           this.key('key').bool()
         );
-      }, '10030101ff', /Failed to match tag primitive bit flag/);
+      }, '10030101ff', /Failed to match tag primitive flag/);
     });
   });
 
@@ -193,6 +193,8 @@ describe('asn1.js error', function() {
     function test(name, model, input, expectedObj, expectedErrs) {
       it('should support ' + name, function() {
         const M = asn1.define('TestModel', model);
+
+        // console.log(M.encode(expectedObj))
 
         const decoded = M.decode(Buffer.from(input, 'hex'), 'der', {
           partial: true
@@ -218,7 +220,7 @@ describe('asn1.js error', function() {
           this.key('d').int()
         )
       );
-    }, '30073005300022012e', { a: { b: {}, d: new bn(46) } }, [
+    }, '30073005300002012e', { a: { b: {}, d: new bn(46) } }, [
       /"int" at: \["a"\]\["b"\]\["c"\]/
     ]);
 
@@ -231,7 +233,7 @@ describe('asn1.js error', function() {
           this.key('d').int()
         )
       );
-    }, '30073005300322012e', { a: { b: { c: new bn(46) } } }, [
+    }, '30073005300302012e', { a: { b: { c: new bn(46) } } }, [
       /"int" at: \["a"\]\["d"\]/
     ]);
   });

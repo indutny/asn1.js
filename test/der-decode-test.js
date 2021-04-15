@@ -20,7 +20,7 @@ describe('asn1.js DER decoder', function() {
       );
     });
 
-    const out = A.decode(Buffer.from('300720050403313233', 'hex'), 'der');
+    const out = A.decode(Buffer.from('3007a0050403313233', 'hex'), 'der');
     assert.equal(out.a.b.toString(), '123');
   });
 

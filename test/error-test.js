@@ -180,7 +180,6 @@ describe('asn1.js error', function() {
         );
       }, 'B0030101ff', /Failed to match tag class: "universal"/);
 
-      // TODO
       test('incorrect tag primitive bit flag', function() {
         this.seq().obj(
           this.key('key').bool()
@@ -193,8 +192,6 @@ describe('asn1.js error', function() {
     function test(name, model, input, expectedObj, expectedErrs) {
       it('should support ' + name, function() {
         const M = asn1.define('TestModel', model);
-
-        // console.log(M.encode(expectedObj))
 
         const decoded = M.decode(Buffer.from(input, 'hex'), 'der', {
           partial: true

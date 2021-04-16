@@ -128,7 +128,7 @@ describe('asn1.js error', function() {
     describe('primitive', function() {
       test('int', function() {
         this.int();
-      }, '2201', /body of: "int"/);
+      }, '0201', /body of: "int"/);
 
       test('int', function() {
         this.int();
@@ -173,6 +173,18 @@ describe('asn1.js error', function() {
           )
         );
       }, '30053003300122', /length of "int" at: \["a"\]\["b"\]\["c"\]/);
+
+      test('incorrect tag class', function() {
+        this.seq().obj(
+          this.key('key').bool()
+        );
+      }, 'B0030101ff', /Failed to match tag class: "universal"/);
+
+      test('incorrect tag primitive bit flag', function() {
+        this.seq().obj(
+          this.key('key').bool()
+        );
+      }, '10030101ff', /Failed to match tag primitive flag/);
     });
   });
 
@@ -205,7 +217,7 @@ describe('asn1.js error', function() {
           this.key('d').int()
         )
       );
-    }, '30073005300022012e', { a: { b: {}, d: new bn(46) } }, [
+    }, '30073005300002012e', { a: { b: {}, d: new bn(46) } }, [
       /"int" at: \["a"\]\["b"\]\["c"\]/
     ]);
 
@@ -218,7 +230,7 @@ describe('asn1.js error', function() {
           this.key('d').int()
         )
       );
-    }, '30073005300322012e', { a: { b: { c: new bn(46) } } }, [
+    }, '30073005300302012e', { a: { b: { c: new bn(46) } } }, [
       /"int" at: \["a"\]\["d"\]/
     ]);
   });

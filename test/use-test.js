@@ -96,6 +96,32 @@ describe('asn1.js models', function() {
 
     });
 
+    it('should get model with function call from choice', function() {
+      const SubModel = asn1.define('SubModel', function() {
+        this.seq().obj(
+          this.key('x').octstr()
+        )
+      });
+      const Model = asn1.define('Model', function() {
+        this.seq().obj(
+          this.key('a').int(),
+          this.key('sub').choice({
+            variant1: this.use(function(obj) {
+                assert.equal(obj.a, 1);
+                return SubModel;
+            })
+          })
+        );
+      });
+
+      const data = {a: new bn(1), sub: {type: 'variant1', value: {x: Buffer.from("123")}}};
+      const wire = Model.encode(data, 'der');
+      assert.equal(wire.toString('hex'), '300a02010130050403313233');
+      const back = Model.decode(wire, 'der');
+      jsonEqual(back, data);
+
+    });
+
     it('should support recursive submodels', function() {
       const PlainSubModel = asn1.define('PlainSubModel', function() {
         this.int();

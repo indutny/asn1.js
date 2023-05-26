@@ -14,7 +14,7 @@ describe('asn1.js DER encoder', function() {
    * */
   it('should code explicit tag as 0xA2', function() {
     const E = asn1.define('E', function() {
-      this.explicit(2).octstr()
+      this.explicit(2).octstr();
     });
 
     const encoded = E.encode('X', 'der');
@@ -22,7 +22,7 @@ describe('asn1.js DER encoder', function() {
     // <Explicit tag> <wrapped len> <str tag> <len> <payload>
     assert.equal(encoded.toString('hex'), 'a203040158');
     assert.equal(encoded.length, 5);
-  })
+  });
 
   function test(name, model_definition, model_value, der_expected) {
     it(name, function() {
@@ -68,6 +68,14 @@ describe('asn1.js DER encoder', function() {
   test('should encode 0x8011 properly', function() {
     this.int();
   }, 0x8011, '0203008011');
+
+  test('should encode int -1 properly', function() {
+    this.int();
+  }, -1 , '0201FF');
+
+  test('should encode int 1 properly', function() {
+    this.int();
+  }, 1 , '020101');
 
   test('should omit default value in DER', function() {
     this.seq().obj(
@@ -118,7 +126,7 @@ describe('asn1.js DER encoder', function() {
       this.octstr().contains(B);
     });
 
-    const out = A.encode({ nested: 5 }, 'der')
+    const out = A.encode({ nested: 5 }, 'der');
     assert.equal(out.toString('hex'), '04053003020105');
   });
 
@@ -139,13 +147,13 @@ describe('asn1.js DER encoder', function() {
   }, 'septic tank', '1A0B7365707469632074616E6B');
 
   it('should not require encoder param', function() {
-     const M = asn1.define('Model', function() {
-       this.choice({
-         apple: this.bool(),
-       });
-     });
-     // Note no encoder specified, defaults to 'der'
-     const encoded = M.encode({ 'type': 'apple', 'value': true });
-     assert.deepEqual(encoded, Buffer.from('0101ff', 'hex'));
+    const M = asn1.define('Model', function() {
+      this.choice({
+        apple: this.bool(),
+      });
+    });
+    // Note no encoder specified, defaults to 'der'
+    const encoded = M.encode({ 'type': 'apple', 'value': true });
+    assert.deepEqual(encoded, Buffer.from('0101ff', 'hex'));
   });
 });
